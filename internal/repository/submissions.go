@@ -28,6 +28,7 @@ func (r *submissionsRepository) List(limit, offset int) ([]*models.Submission, i
 							"name",
 							class,
 							tier,
+							mode,
 							build,
 							video,
 							duration,
@@ -47,9 +48,10 @@ func (r *submissionsRepository) List(limit, offset int) ([]*models.Submission, i
 			&submission.Name,
 			&submission.Class,
 			&submission.Tier,
+			&submission.Mode,
 			&submission.Build,
 			&submission.Video,
-			&submission.DurationSeconds,
+			&submission.Duration,
 			&submission.CreatedAt,
 			&submission.UpdatedAt,
 		)
@@ -66,17 +68,18 @@ func (r *submissionsRepository) List(limit, offset int) ([]*models.Submission, i
 
 func (r *submissionsRepository) Create(submission *models.Submission) (*models.Submission, error) {
 	newSubmission := models.Submission{}
-	query := `INSERT INTO submissions (name, class, tier, build, video, duration)
-						VALUES ($1, $2, $3, $4, $5, $6)
+	query := `INSERT INTO submissions (name, class, tier, mode, build, video, duration)
+						VALUES ($1, $2, $3, $4, $5, $6, $7)
 						RETURNING *`
 	err := r.db.QueryRowx(
 		query,
 		submission.Name,
 		submission.Class,
 		submission.Tier,
+		submission.Mode,
 		submission.Build,
 		submission.Video,
-		int(submission.Duration.Seconds()),
+		submission.Duration,
 	).StructScan(&newSubmission)
 	return &newSubmission, err
 }

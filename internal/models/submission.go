@@ -1,8 +1,6 @@
 package models
 
 import (
-	"encoding/json"
-	"errors"
 	"time"
 
 	"github.com/janczizikow/pit/internal/validator"
@@ -24,15 +22,14 @@ const (
 )
 
 type Submission struct {
-	ID              int      `db:"id" json:"id"`
-	Name            string   `db:"name" json:"name"`
-	Class           string   `db:"class" json:"class"`
-	Tier            int      `db:"tier" json:"tier"`
-	Mode            string   `db:"mode" json:"mode"`
-	Build           string   `db:"build" json:"build"`
-	Video           string   `db:"video" json:"video"`
-	Duration        duration `db:"-" json:"duration"`
-	DurationSeconds int      `db:"duration" json:"-"`
+	ID       int    `db:"id" json:"id"`
+	Name     string `db:"name" json:"name"`
+	Class    string `db:"class" json:"class"`
+	Tier     int    `db:"tier" json:"tier"`
+	Mode     string `db:"mode" json:"mode"`
+	Build    string `db:"build" json:"build"`
+	Video    string `db:"video" json:"video"`
+	Duration int    `db:"duration" json:"duration"`
 	// Timestamps
 
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
@@ -55,35 +52,6 @@ func ValidateSubmission(v *validator.Validator, submission *Submission) {
 
 	v.Check(submission.Video != "", "video", "is required")
 
-	v.Check(submission.Duration.Seconds() != 0, "duration", "is required")
-	v.Check(submission.Duration.Minutes() <= 15, "duration", "must be a maximum of 15 minutes")
-}
-
-type duration struct {
-	time.Duration
-}
-
-func (d duration) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.String())
-}
-
-func (d *duration) UnmarshalJSON(b []byte) error {
-	var v interface{}
-	if err := json.Unmarshal(b, &v); err != nil {
-		return err
-	}
-	switch value := v.(type) {
-	case float64:
-		d.Duration = time.Duration(value)
-		return nil
-	case string:
-		var err error
-		d.Duration, err = time.ParseDuration(value)
-		if err != nil {
-			return err
-		}
-		return nil
-	default:
-		return errors.New("invalid duration")
-	}
+	v.Check(submission.Duration != 0, "duration", "is required")
+	v.Check(submission.Duration <= 900, "duration", "must be a maximum of 15 minutes")
 }
