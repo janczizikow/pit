@@ -8,13 +8,19 @@ import (
 	"github.com/janczizikow/pit/internal/validator"
 )
 
+// Modes
+const (
+	Softcore = "softcore"
+	Hardcore = "hardcore"
+)
+
 // Classes
 const (
 	Barbarian   = "barbarian"
 	Druid       = "druid"
 	Necromancer = "necromancer"
 	Rogue       = "rogue"
-	Sorcerer    = "Sorcerer"
+	Sorcerer    = "sorcerer"
 )
 
 type Submission struct {
@@ -22,6 +28,7 @@ type Submission struct {
 	Name            string   `db:"name" json:"name"`
 	Class           string   `db:"class" json:"class"`
 	Tier            int      `db:"tier" json:"tier"`
+	Mode            string   `db:"mode" json:"mode"`
 	Build           string   `db:"build" json:"build"`
 	Video           string   `db:"video" json:"video"`
 	Duration        duration `db:"-" json:"duration"`
@@ -38,6 +45,9 @@ func ValidateSubmission(v *validator.Validator, submission *Submission) {
 
 	v.Check(submission.Class != "", "class", "is required")
 	v.Check(validator.In(submission.Class, Barbarian, Druid, Necromancer, Rogue, Sorcerer), "class", "is invalid")
+
+	v.Check(submission.Mode != "", "mode", "is required")
+	v.Check(validator.In(submission.Mode, Softcore, Hardcore), "mode", "is invalid")
 
 	v.Check(submission.Tier != 0, "tier", "is required")
 	v.Check(submission.Tier > 0, "tier", "must be greater than zero")
