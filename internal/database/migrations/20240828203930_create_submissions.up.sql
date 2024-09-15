@@ -12,3 +12,5 @@ CREATE TABLE IF NOT EXISTS submissions (
   created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
   updated_at timestamp(0) with time zone NOT NULL DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS submissions_tier_idx ON submissions (tier);
+CREATE INDEX IF NOT EXISTS submissions_duration_idx ON submissions (duration);

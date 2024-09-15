@@ -1,13 +1,15 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/janczizikow/pit/internal/models"
 	"github.com/jmoiron/sqlx"
 )
 
 // SubmissionsRepository is the interface that a submissions repository should conform to.
 type SubmissionsRepository interface {
-	List(limit, offset int) ([]*models.Submission, int, error)
+	List(limit, offset int, orderBy string) ([]*models.Submission, int, error)
 	Create(submission *models.Submission) (*models.Submission, error)
 }
 
@@ -20,21 +22,41 @@ func NewSubmissionsRepository(db *sqlx.DB) *submissionsRepository {
 	return &submissionsRepository{db: db}
 }
 
-func (r *submissionsRepository) List(limit, offset int) ([]*models.Submission, int, error) {
+func (r *submissionsRepository) List(limit, offset int, orderBy string) ([]*models.Submission, int, error) {
 	count := 0
 	submissions := make([]*models.Submission, 0)
-	query := `SELECT COUNT(*) OVER(),
-							id,
-							"name",
-							class,
-							tier,
-							mode,
-							build,
-							video,
-							duration,
-							created_at,
-							updated_at
-						FROM submissions LIMIT $1 OFFSET $2;`
+	var query string
+	if orderBy != "" {
+		query = fmt.Sprintf(`SELECT COUNT(*) OVER(),
+								id,
+								"name",
+								class,
+								tier,
+								mode,
+								build,
+								video,
+								duration,
+								created_at,
+								updated_at
+							FROM submissions
+							ORDER BY %s, id ASC
+							LIMIT $1 OFFSET $2;`, orderBy)
+	} else {
+		query = `SELECT COUNT(*) OVER(),
+								id,
+								"name",
+								class,
+								tier,
+								mode,
+								build,
+								video,
+								duration,
+								created_at,
+								updated_at
+							FROM submissions
+							ORDER BY id DESC
+							LIMIT $1 OFFSET $2;`
+	}
 	rows, err := r.db.Query(query, limit, offset)
 	if err != nil {
 		return nil, 0, err

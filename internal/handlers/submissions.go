@@ -35,13 +35,24 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 		response.BadRequestResponse(w, r, err)
 		return
 	}
+	sort, err := request.QueryStrings(r, "sort", "")
+	if err != nil {
+		response.BadRequestResponse(w, r, err)
+		return
+	}
 
-	paginator := request.NewPaginator(size, page)
+	paginator := request.NewPaginator(size, page, sort, map[string]bool{
+		"duration":  true,
+		"tier":      true,
+		"-duration": true,
+		"-tier":     true,
+	})
 	if ok, errs := paginator.Valid(); !ok {
 		response.FailedValidationResponse(w, r, errs)
 		return
 	}
-	submissions, total, err := h.repo.List(paginator.Limit(), paginator.Offset())
+
+	submissions, total, err := h.repo.List(paginator.Limit(), paginator.Offset(), paginator.Sort())
 	if err != nil {
 		response.InternalServerErrorResponse(w, r)
 		return

@@ -1,7 +1,9 @@
 package request
 
 import (
+	"fmt"
 	"math"
+	"strings"
 
 	"github.com/janczizikow/pit/internal/validator"
 )
@@ -9,12 +11,14 @@ import (
 const paginationMaxPageSize = 1000
 
 type paginator struct {
-	page     int
-	pageSize int
+	page        int
+	pageSize    int
+	sort        []string
+	sortSafeMap map[string]bool
 }
 
-func NewPaginator(pageSize int, page int) *paginator {
-	return &paginator{pageSize: pageSize, page: page}
+func NewPaginator(pageSize, page int, sort []string, sortSafeMap map[string]bool) *paginator {
+	return &paginator{pageSize: pageSize, page: page, sort: sort, sortSafeMap: sortSafeMap}
 }
 
 func (p paginator) Limit() int {
@@ -23,6 +27,21 @@ func (p paginator) Limit() int {
 
 func (p paginator) Offset() int {
 	return (p.page - 1) * p.pageSize
+}
+
+func (p paginator) Sort() string {
+	var sort []string
+	for _, value := range p.sort {
+		if _, ok := p.sortSafeMap[value]; ok {
+			if strings.HasPrefix(value, "-") {
+				sort = append(sort, fmt.Sprintf("%s %s", strings.TrimPrefix(value, "-"), "DESC"))
+			} else {
+				sort = append(sort, fmt.Sprintf("%s %s", value, "ASC"))
+			}
+		}
+	}
+
+	return strings.Join(sort, ",")
 }
 
 func (p paginator) Valid() (bool, validator.Errors) {
