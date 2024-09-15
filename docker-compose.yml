@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./dbshell:/docker-entrypoint-initdb.d/
+    networks:
+      - fullstack
+  api:
+    build: .
+    ports:
+      - 8080:8080
+    restart: always
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+    networks:
+      - fullstack
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+
+volumes:
+  pg_data:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  fullstack:
+    driver: bridge

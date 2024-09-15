@@ -26,7 +26,7 @@ func New(db *sqlx.DB) *Server {
 // Run starts a HTTP server listening for connections.
 func (s *Server) Run() error {
 	srv := http.Server{
-		Addr:         ":8000",
+		Addr:         ":8080",
 		Handler:      Router(s),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 30 * time.Second,
