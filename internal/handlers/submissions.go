@@ -3,7 +3,11 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/janczizikow/pit/internal/http/request"
+	"github.com/janczizikow/pit/internal/http/response"
+	"github.com/janczizikow/pit/internal/models"
 	"github.com/janczizikow/pit/internal/repository"
+	"github.com/janczizikow/pit/internal/validator"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -21,7 +25,52 @@ func NewSubmissionsHandler(repo repository.SubmissionsRepository) *submissionsHa
 }
 
 func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	page, err := request.QueryInt(r, "page", 1)
+	if err != nil {
+		response.BadRequestResponse(w, r, err)
+		return
+	}
+	size, err := request.QueryInt(r, "size", 100)
+	if err != nil {
+		response.BadRequestResponse(w, r, err)
+		return
+	}
+
+	paginator := request.NewPaginator(size, page)
+	if ok, errs := paginator.Valid(); !ok {
+		response.FailedValidationResponse(w, r, errs)
+		return
+	}
+	submissions, total, err := h.repo.List(paginator.Limit(), paginator.Offset())
+	if err != nil {
+		response.InternalServerErrorResponse(w, r)
+		return
+	}
+
+	response.WriteJSON(w, http.StatusOK, map[string]interface{}{
+		"data":     submissions,
+		"metadata": paginator.CalculateMetadata(total),
+	})
 }
 
 func (h *submissionsHandler) CreateSubmission(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	submission := &models.Submission{}
+	err := request.ReadJSON(w, r, submission)
+	if err != nil {
+		response.BadRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	if models.ValidateSubmission(v, submission); !v.Valid() {
+		response.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	created, err := h.repo.Create(submission)
+	if err != nil {
+		response.InternalServerErrorResponse(w, r)
+		return
+	}
+	response.WriteJSON(w, http.StatusCreated, created)
 }

@@ -21,10 +21,62 @@ func NewSubmissionsRepository(db *sqlx.DB) *submissionsRepository {
 }
 
 func (r *submissionsRepository) List(limit, offset int) ([]*models.Submission, int, error) {
-	return nil, 0, nil
+	count := 0
+	submissions := make([]*models.Submission, 0)
+	query := `SELECT COUNT(*) OVER(),
+							id,
+							"name",
+							class,
+							tier,
+							build,
+							video,
+							duration,
+							created_at,
+							updated_at
+						FROM submissions LIMIT $1 OFFSET $2;`
+	rows, err := r.db.Query(query, limit, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		submission := models.Submission{}
+		err = rows.Scan(
+			&count,
+			&submission.ID,
+			&submission.Name,
+			&submission.Class,
+			&submission.Tier,
+			&submission.Build,
+			&submission.Video,
+			&submission.DurationSeconds,
+			&submission.CreatedAt,
+			&submission.UpdatedAt,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+		submissions = append(submissions, &submission)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, 0, err
+	}
+	return submissions, count, nil
 }
 
 func (r *submissionsRepository) Create(submission *models.Submission) (*models.Submission, error) {
 	newSubmission := models.Submission{}
-	return &newSubmission, nil
+	query := `INSERT INTO submissions (name, class, tier, build, video, duration)
+						VALUES ($1, $2, $3, $4, $5, $6)
+						RETURNING *`
+	err := r.db.QueryRowx(
+		query,
+		submission.Name,
+		submission.Class,
+		submission.Tier,
+		submission.Build,
+		submission.Video,
+		int(submission.Duration.Seconds()),
+	).StructScan(&newSubmission)
+	return &newSubmission, err
 }
