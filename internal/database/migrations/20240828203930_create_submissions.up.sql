@@ -14,3 +14,4 @@ CREATE TABLE IF NOT EXISTS submissions (
 );
 CREATE INDEX IF NOT EXISTS submissions_tier_idx ON submissions (tier);
 CREATE INDEX IF NOT EXISTS submissions_duration_idx ON submissions (duration);
+CREATE INDEX IF NOT EXISTS submissions_name_idx ON submissions USING GIN (to_tsvector('simple', name));

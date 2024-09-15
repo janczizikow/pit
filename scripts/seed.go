@@ -70,16 +70,12 @@ func main() {
 				log.Fatal("Error when parsing duration: ", err)
 			}
 		}
-		build := v.Build
-		if build == "" {
-			build = `""`
-		}
 		data = append(data, []string{
 			v.Name,
 			strings.ToLower(v.Class),
 			strconv.FormatInt(int64(v.Tier), 10),
 			mode,
-			build,
+			v.Build,
 			v.Video,
 			strconv.FormatInt(int64(duration.Seconds()), 10),
 			v.Date.Format(time.RFC3339),

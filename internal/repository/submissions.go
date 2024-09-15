@@ -27,35 +27,44 @@ func (r *submissionsRepository) List(limit, offset int, orderBy string) ([]*mode
 	submissions := make([]*models.Submission, 0)
 	var query string
 	if orderBy != "" {
-		query = fmt.Sprintf(`SELECT COUNT(*) OVER(),
-								id,
-								"name",
-								class,
-								tier,
-								mode,
-								build,
-								video,
-								duration,
-								created_at,
-								updated_at
-							FROM submissions
-							ORDER BY %s, id ASC
-							LIMIT $1 OFFSET $2;`, orderBy)
+		query = fmt.Sprintf(`SELECT
+													COUNT(*) OVER(),
+													id,
+													"name",
+													class,
+													tier,
+													mode,
+													build,
+													video,
+													duration,
+													created_at,
+													updated_at
+														FROM (
+															SELECT DISTINCT ON (name) *
+															FROM   submissions
+															ORDER BY name ASC, %s
+														) sub
+												ORDER BY %s
+												LIMIT $1 OFFSET $2;`, orderBy, orderBy)
 	} else {
 		query = `SELECT COUNT(*) OVER(),
-								id,
-								"name",
-								class,
-								tier,
-								mode,
-								build,
-								video,
-								duration,
-								created_at,
-								updated_at
-							FROM submissions
-							ORDER BY id DESC
-							LIMIT $1 OFFSET $2;`
+							id,
+							"name",
+							class,
+							tier,
+							mode,
+							build,
+							video,
+							duration,
+							created_at,
+							updated_at
+								FROM (
+									SELECT DISTINCT ON (name) *
+									FROM   submissions
+									ORDER BY name ASC, tier DESC, duration ASC
+								) sub
+						ORDER BY id DESC
+						LIMIT $1 OFFSET $2;`
 	}
 	rows, err := r.db.Query(query, limit, offset)
 	if err != nil {
