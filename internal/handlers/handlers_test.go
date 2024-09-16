@@ -13,7 +13,7 @@ var db *sqlx.DB
 
 func TestMain(m *testing.M) {
 	var err error
-	db, err = database.Connect("postgres://postgres@localhost/pit_test?sslmode=disable")
+	db, err = database.Connect("postgres://postgres:postgres@localhost/pit_test?sslmode=disable")
 
 	if err != nil {
 		log.Fatal(err)
