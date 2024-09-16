@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/janczizikow/pit/internal/models"
@@ -9,7 +10,7 @@ import (
 
 // SubmissionsRepository is the interface that a submissions repository should conform to.
 type SubmissionsRepository interface {
-	List(limit, offset int, orderBy string) ([]*models.Submission, int, error)
+	List(limit, offset int, class, orderBy string) ([]*models.Submission, int, error)
 	Create(submission *models.Submission) (*models.Submission, error)
 }
 
@@ -22,10 +23,14 @@ func NewSubmissionsRepository(db *sqlx.DB) *submissionsRepository {
 	return &submissionsRepository{db: db}
 }
 
-func (r *submissionsRepository) List(limit, offset int, orderBy string) ([]*models.Submission, int, error) {
+func (r *submissionsRepository) List(limit, offset int, class, orderBy string) ([]*models.Submission, int, error) {
 	count := 0
 	submissions := make([]*models.Submission, 0)
 	var query string
+	var where string
+	if class != "" {
+		where = "WHERE class = $3"
+	}
 	if orderBy != "" {
 		query = fmt.Sprintf(`SELECT
 													COUNT(*) OVER(),
@@ -40,14 +45,15 @@ func (r *submissionsRepository) List(limit, offset int, orderBy string) ([]*mode
 													created_at,
 													updated_at
 														FROM (
-															SELECT DISTINCT ON (name) *
-															FROM   submissions
-															ORDER BY name ASC, %s
+															SELECT DISTINCT ON (name, class) *
+															FROM submissions
+															ORDER BY name ASC, class ASC, %s
 														) sub
+												%s
 												ORDER BY %s
-												LIMIT $1 OFFSET $2;`, orderBy, orderBy)
+												LIMIT $1 OFFSET $2;`, orderBy, where, orderBy)
 	} else {
-		query = `SELECT COUNT(*) OVER(),
+		query = fmt.Sprintf(`SELECT COUNT(*) OVER(),
 							id,
 							"name",
 							class,
@@ -59,14 +65,21 @@ func (r *submissionsRepository) List(limit, offset int, orderBy string) ([]*mode
 							created_at,
 							updated_at
 								FROM (
-									SELECT DISTINCT ON (name) *
-									FROM   submissions
-									ORDER BY name ASC, tier DESC, duration ASC
+									SELECT DISTINCT ON (name, class) *
+									FROM submissions
+									ORDER BY name ASC, class ASC, tier DESC, duration ASC
 								) sub
+						%s
 						ORDER BY id DESC
-						LIMIT $1 OFFSET $2;`
+						LIMIT $1 OFFSET $2;`, where)
 	}
-	rows, err := r.db.Query(query, limit, offset)
+	var rows *sql.Rows
+	var err error
+	if class != "" {
+		rows, err = r.db.Query(query, limit, offset, class)
+	} else {
+		rows, err = r.db.Query(query, limit, offset)
+	}
 	if err != nil {
 		return nil, 0, err
 	}

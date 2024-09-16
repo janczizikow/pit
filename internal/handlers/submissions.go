@@ -40,6 +40,11 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 		response.BadRequestResponse(w, r, err)
 		return
 	}
+	class, err := request.QueryString(r, "class", "")
+	if err != nil {
+		response.BadRequestResponse(w, r, err)
+		return
+	}
 
 	paginator := request.NewPaginator(size, page, sort, map[string]bool{
 		"duration":  true,
@@ -52,8 +57,9 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	submissions, total, err := h.repo.List(paginator.Limit(), paginator.Offset(), paginator.Sort())
+	submissions, total, err := h.repo.List(paginator.Limit(), paginator.Offset(), class, paginator.Sort())
 	if err != nil {
+		// TODO: handle enum errors
 		response.InternalServerErrorResponse(w, r)
 		return
 	}
