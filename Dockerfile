@@ -1,3 +1,21 @@
+# syntax=docker/dockerfile:1
+# frontend
+FROM node:20.17 AS frontend
+
+# Set destination for COPY
+WORKDIR /web
+
+# Download npm modules
+COPY web/package.json .
+COPY web/yarn.lock .
+RUN yarn --frozen-lockfile
+
+COPY web/ .
+
+# Build
+RUN yarn build
+
+# backend
 FROM golang:1.23.1
 
 # Set destination for COPY
@@ -13,6 +31,7 @@ RUN mv migrate $GOPATH/bin/migrate
 
 COPY . .
 COPY ./scripts/run.sh /bin/run.sh
+COPY --from=frontend /web /bin/web/
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o=/bin/api ./cmd/api

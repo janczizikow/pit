@@ -13,7 +13,7 @@ import (
 func Router(s *Server) http.Handler {
 	router := httprouter.New()
 
-	router.NotFound = http.HandlerFunc(response.NotFoundResponse)
+	router.NotFound = http.FileServer(http.Dir("./web/build/"))
 	router.MethodNotAllowed = http.HandlerFunc(response.MethodNotAllowedResponse)
 
 	repo := repository.New(s.db)
@@ -22,5 +22,5 @@ func Router(s *Server) http.Handler {
 	router.GET("/api/v1/submissions", submissionsHandler.ListSubmissions)
 	router.POST("/api/v1/submissions", submissionsHandler.CreateSubmission)
 
-	return middleware.Recover(middleware.CORS(router))
+	return middleware.Recover(router)
 }
