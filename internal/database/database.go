@@ -9,7 +9,6 @@ import (
 
 const (
 	maxOpenConns = 30
-	maxIdleConns = 30
 	maxIdleTime  = time.Second * 239
 )
 

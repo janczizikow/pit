@@ -14,8 +14,9 @@ func Router(s *Server) http.Handler {
 	repo := repository.New(s.db)
 	submissionsHandler := handlers.NewSubmissionsHandler(repo.Submissions)
 
-	mux.Handle("/", http.FileServer(http.Dir("./web/build")))
-	mux.Handle("/submission", http.FileServer(http.Dir("./web/build")))
+	static := http.FileServer(http.Dir("./web/build"))
+	mux.Handle("/", static)
+	mux.Handle("/submission", static)
 	mux.HandleFunc("GET /api/v1/submissions", submissionsHandler.ListSubmissions)
 	mux.HandleFunc("POST /api/v1/submissions", submissionsHandler.CreateSubmission)
 
