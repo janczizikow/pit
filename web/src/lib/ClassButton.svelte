@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
 	export let onClick;
 	export let type;
 	export let selected;
+	const src = `classes/base/${type}.webp`;
+	const hoveredSRC = `classes/hover/${type}.webp`;
 	let hovered = false;
 	function onHover() {
 		hovered = true;
@@ -9,29 +11,16 @@
 	function onBlur() {
 		hovered = false;
 	}
-	let src = `classes/base/${type}.webp`;
-	let hoveredSRC = `classes/hover/${type}.webp`;
 </script>
 
-{#if selected || hovered}
-	<button
-		on:click={() => onClick?.(type)}
-		on:mouseover={onHover}
-		on:focus={onHover}
-		on:mouseout={onBlur}
-		on:blur={onBlur}
-		style="background-image: url({hoveredSRC})"
-	></button>
-{:else}
-	<button
-		on:click={() => onClick?.(type)}
-		on:mouseover={onHover}
-		on:focus={onHover}
-		on:mouseout={onBlur}
-		on:blur={onBlur}
-		style="background-image: url({src})"
-	></button>
-{/if}
+<button
+	on:click={() => onClick?.(type)}
+	on:mouseover={onHover}
+	on:focus={onHover}
+	on:mouseout={onBlur}
+	on:blur={onBlur}
+	style="background-image: url({selected || hovered ? hoveredSRC : src})"
+></button>
 
 <style>
 	button {

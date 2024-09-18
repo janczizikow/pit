@@ -1,5 +1,5 @@
 <script>
-	// import { page } from '$app/stores';
+	import { page } from '$app/stores';
 	import logo from '$lib/assets/diablo.svg';
 	import Button from '$lib/Button.svelte';
 </script>
@@ -9,7 +9,11 @@
 		<img src={logo} alt="Diablo IV" />
 	</a>
 
-	<Button>Submit</Button>
+	{#if $page.url.pathname !== '/submission'}
+		<a href="/submission" class="link">
+			<Button>Submit new run</Button>
+		</a>
+	{/if}
 </header>
 
 <style>
@@ -33,5 +37,9 @@
 			backdrop-filter: blur(20px);
 			background: rgba(36, 37, 38, 0.8);
 		}
+	}
+
+	.link {
+		text-decoration: none;
 	}
 </style>

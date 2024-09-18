@@ -1,8 +1,40 @@
-<button>
-	<slot />
-</button>
+<script lang="ts">
+	import type { PaginationMetadata } from './types';
+
+	export let metadata: PaginationMetadata;
+	export let onChangePage: (page: number) => void;
+</script>
+
+<div class="pagination">
+	<button
+		disabled={metadata?.current_page === 1}
+		on:click={() => {
+			if (metadata?.current_page) {
+				onChangePage(metadata.current_page - 1);
+			}
+		}}>&lt;</button
+	>
+	<button>{metadata?.current_page || 1}</button>
+	<button
+		disabled={metadata?.last_page === metadata?.current_page}
+		on:click={() => {
+			if (metadata?.current_page) {
+				onChangePage(metadata.current_page + 1);
+			}
+		}}>&gt;</button
+	>
+</div>
 
 <style>
+	.pagination {
+		display: flex;
+		flex-direction: row;
+		gap: 12px;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 48px;
+	}
+
 	button {
 		/* reset */
 		background: none;

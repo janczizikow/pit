@@ -2,59 +2,51 @@
 	import ClassButton from '$lib/ClassButton.svelte';
 	import Table from '$lib/Table.svelte';
 	import video from '$lib/assets/hero.webm';
-	import type { SubmissionsResponse } from '$lib/types';
-	import { writable } from 'svelte/store';
+	import { onDestroy, onMount } from 'svelte';
+	import { createSubmissionsStore, PAGE_SIZE } from '../lib/store';
+	import Pagination from '$lib/Pagination.svelte';
+	import type { Unsubscriber } from 'svelte/store';
+	import Heading from '$lib/Heading.svelte';
 
-	const PAGE_SIZE = 50;
-	let page = 1;
-	let data = writable<SubmissionsResponse>({ data: [], metadata: {} });
-	let selected = '';
+	const { listSubmissions, selected, selectClass, changePage, data, query } =
+		createSubmissionsStore();
+	let unsubscribe: Unsubscriber;
 
-	$: fetch(
-		`http://localhost:8080/api/v1/submissions?page=${page}&size=${PAGE_SIZE}&class=${selected.toLowerCase()}&sort=-tier,duration`
-	)
-		.then((r) => r.json())
-		.then((json) => {
-			data.set(json);
+	onMount(() => {
+		unsubscribe = query.subscribe((q) => {
+			listSubmissions({ ...q, classQuery: q.class.toLowerCase() });
 		});
+	});
 
-	function onSelect(cls: string) {
-		page = 1;
-		if (selected === cls) {
-			selected = '';
-		} else {
-			selected = cls;
-		}
-	}
+	onDestroy(() => {
+		unsubscribe?.();
+	});
 </script>
 
-<div class="page">
+<div>
 	<div class="video-container">
 		<video autoplay loop muted>
 			<source src={video} type="video/webm" />
 		</video>
-		<h1 class="heading">Solo Pit Ladder</h1>
+		<Heading>Solo Pit Ladder</Heading>
 		<p>
 			Best community seasonal pit leaderboard. Rankings are determined by the highest tier level
 			achieved and the lowest completion time.
 		</p>
 		<div class="classes">
-			<ClassButton type="BARBARIAN" selected={selected === 'BARBARIAN'} onClick={onSelect} />
-			<ClassButton type="DRUID" selected={selected === 'DRUID'} onClick={onSelect} />
-			<ClassButton type="NECROMANCER" selected={selected === 'NECROMANCER'} onClick={onSelect} />
-			<ClassButton type="ROGUE" selected={selected === 'ROGUE'} onClick={onSelect} />
-			<ClassButton type="SORCERER" selected={selected === 'SORCERER'} onClick={onSelect} />
+			<ClassButton type="BARBARIAN" selected={$selected === 'BARBARIAN'} onClick={selectClass} />
+			<ClassButton type="DRUID" selected={$selected === 'DRUID'} onClick={selectClass} />
+			<ClassButton
+				type="NECROMANCER"
+				selected={$selected === 'NECROMANCER'}
+				onClick={selectClass}
+			/>
+			<ClassButton type="ROGUE" selected={$selected === 'ROGUE'} onClick={selectClass} />
+			<ClassButton type="SORCERER" selected={$selected === 'SORCERER'} onClick={selectClass} />
 		</div>
-		<Table data={$data.data} />
+		<Pagination metadata={$data.metadata} onChangePage={changePage} />
+		<Table data={$data.data} skip={($query.page - 1) * PAGE_SIZE} />
 	</div>
-
-	{#each Array($data.metadata?.last_page).fill(null) as _, i}
-		<button
-			on:click={() => {
-				page = i + 1;
-			}}>{i + 1}</button
-		>
-	{/each}
 </div>
 
 <style>
@@ -71,19 +63,6 @@
 		height: calc(1px + 100vh);
 		object-fit: cover;
 		z-index: -1;
-	}
-
-	.heading {
-		padding-top: 180px;
-		margin-bottom: 16px;
-		font-weight: var(--fw-400);
-		font-family: var(--font-accent);
-		font-size: 43px;
-		line-height: 1.05;
-		text-transform: uppercase;
-		text-align: center;
-		text-shadow: 3px 5px 5px rgba(0, 0, 0, 0.5);
-		color: var(--heading-default);
 	}
 
 	p {
