@@ -1,11 +1,12 @@
 package repository
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/janczizikow/pit/internal/models"
-	"github.com/jmoiron/sqlx"
 )
 
 // SubmissionsRepository is the interface that a submissions repository should conform to.
@@ -15,11 +16,11 @@ type SubmissionsRepository interface {
 }
 
 type submissionsRepository struct {
-	db *sqlx.DB
+	db *pgxpool.Pool
 }
 
 // NewSubmissionsRepository returns a new instance of a submissions repository.
-func NewSubmissionsRepository(db *sqlx.DB) *submissionsRepository {
+func NewSubmissionsRepository(db *pgxpool.Pool) *submissionsRepository {
 	return &submissionsRepository{db: db}
 }
 
@@ -73,12 +74,12 @@ func (r *submissionsRepository) List(limit, offset int, class, orderBy string) (
 						ORDER BY id DESC
 						LIMIT $1 OFFSET $2;`, where)
 	}
-	var rows *sql.Rows
+	var rows pgx.Rows
 	var err error
 	if class != "" {
-		rows, err = r.db.Query(query, limit, offset, class)
+		rows, err = r.db.Query(context.Background(), query, limit, offset, class)
 	} else {
-		rows, err = r.db.Query(query, limit, offset)
+		rows, err = r.db.Query(context.Background(), query, limit, offset)
 	}
 	if err != nil {
 		return nil, 0, err
@@ -114,8 +115,9 @@ func (r *submissionsRepository) Create(submission *models.Submission) (*models.S
 	newSubmission := models.Submission{}
 	query := `INSERT INTO submissions (name, class, tier, mode, build, video, duration)
 						VALUES ($1, $2, $3, $4, $5, $6, $7)
-						RETURNING *`
-	err := r.db.QueryRowx(
+						RETURNING id,name,class,tier,mode,build,video,duration,created_at,updated_at;`
+	err := r.db.QueryRow(
+		context.Background(),
 		query,
 		submission.Name,
 		submission.Class,
@@ -124,6 +126,17 @@ func (r *submissionsRepository) Create(submission *models.Submission) (*models.S
 		submission.Build,
 		submission.Video,
 		submission.Duration,
-	).StructScan(&newSubmission)
+	).Scan(
+		&newSubmission.ID,
+		&newSubmission.Name,
+		&newSubmission.Class,
+		&newSubmission.Tier,
+		&newSubmission.Mode,
+		&newSubmission.Build,
+		&newSubmission.Video,
+		&newSubmission.Duration,
+		&newSubmission.CreatedAt,
+		&newSubmission.UpdatedAt,
+	)
 	return &newSubmission, err
 }

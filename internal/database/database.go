@@ -1,28 +1,39 @@
 package database
 
 import (
+	"context"
 	"time"
 
-	_ "github.com/jackc/pgx/stdlib"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
 	maxOpenConns = 30
 	maxIdleConns = 30
-	MaxIdleTime  = 20 * time.Minute
+	maxIdleTime  = time.Second * 239
 )
 
 // Connect to a database and verify with a ping.
-func Connect(dataSourceName string) (*sqlx.DB, error) {
-	db, err := sqlx.Connect("pgx", dataSourceName)
+func Connect(dataSourceName string) (*pgxpool.Pool, error) {
+	config, err := pgxpool.ParseConfig(dataSourceName)
 	if err != nil {
 		return nil, err
 	}
 
-	db.SetMaxOpenConns(maxOpenConns)
-	db.SetMaxIdleConns(maxIdleConns)
-	db.SetConnMaxIdleTime(MaxIdleTime)
+	config.MaxConns = maxOpenConns
+	config.MaxConnIdleTime = maxIdleTime
 
-	return db, nil
+	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer cancel()
+
+	conn, err := pgxpool.NewWithConfig(ctxWithTimeout, config)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := conn.Ping(ctxWithTimeout); err != nil {
+		return nil, err
+	}
+
+	return conn, nil
 }

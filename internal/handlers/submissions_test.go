@@ -8,7 +8,6 @@ import (
 
 	"github.com/janczizikow/pit/internal/handlers"
 	"github.com/janczizikow/pit/internal/repository"
-	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,10 +21,10 @@ func TestCreateSubmissionHandler(t *testing.T) {
 		require.NoError(t, err)
 
 		rr := httptest.NewRecorder()
-		router := httprouter.New()
-		router.POST("/api/v1/submissions", submissionsHandler.CreateSubmission)
+		mux := http.NewServeMux()
+		mux.HandleFunc("POST /api/v1/submissions", submissionsHandler.CreateSubmission)
 
-		router.ServeHTTP(rr, req)
+		mux.ServeHTTP(rr, req)
 		assert.Equal(t, http.StatusBadRequest, rr.Code)
 	})
 
@@ -37,10 +36,10 @@ func TestCreateSubmissionHandler(t *testing.T) {
 		require.NoError(t, err)
 
 		rr := httptest.NewRecorder()
-		router := httprouter.New()
-		router.POST("/api/v1/submissions", submissionsHandler.CreateSubmission)
+		mux := http.NewServeMux()
+		mux.HandleFunc("POST /api/v1/submissions", submissionsHandler.CreateSubmission)
 
-		router.ServeHTTP(rr, req)
+		mux.ServeHTTP(rr, req)
 		assert.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 		assert.Contains(t, rr.Body.String(), `"status":422`)
 		assert.Contains(t, rr.Body.String(), `"param":"name"`)
@@ -66,10 +65,10 @@ func TestCreateSubmissionHandler(t *testing.T) {
 		require.NoError(t, err)
 
 		rr := httptest.NewRecorder()
-		router := httprouter.New()
-		router.POST("/api/v1/submissions", submissionsHandler.CreateSubmission)
+		mux := http.NewServeMux()
+		mux.HandleFunc("POST /api/v1/submissions", submissionsHandler.CreateSubmission)
 
-		router.ServeHTTP(rr, req)
+		mux.ServeHTTP(rr, req)
 		assert.Equal(t, http.StatusCreated, rr.Code)
 	})
 }

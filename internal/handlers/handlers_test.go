@@ -1,15 +1,16 @@
 package handlers_test
 
 import (
+	"context"
 	"log"
 	"os"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/janczizikow/pit/internal/database"
-	"github.com/jmoiron/sqlx"
 )
 
-var db *sqlx.DB
+var db *pgxpool.Pool
 
 func TestMain(m *testing.M) {
 	var err error
@@ -20,7 +21,7 @@ func TestMain(m *testing.M) {
 	}
 
 	code := m.Run()
-	db.MustExec("DELETE FROM submissions")
+	db.Exec(context.Background(), "DELETE FROM submissions")
 	db.Close()
 	os.Exit(code)
 }

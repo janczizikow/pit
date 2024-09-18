@@ -8,7 +8,6 @@ import (
 	"github.com/janczizikow/pit/internal/models"
 	"github.com/janczizikow/pit/internal/repository"
 	"github.com/janczizikow/pit/internal/validator"
-	"github.com/julienschmidt/httprouter"
 )
 
 type SubmissionsHandler interface {
@@ -24,7 +23,7 @@ func NewSubmissionsHandler(repo repository.SubmissionsRepository) *submissionsHa
 	return &submissionsHandler{repo: repo}
 }
 
-func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Request) {
 	page, err := request.QueryInt(r, "page", 1)
 	if err != nil {
 		response.BadRequestResponse(w, r, err)
@@ -70,7 +69,7 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 	})
 }
 
-func (h *submissionsHandler) CreateSubmission(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *submissionsHandler) CreateSubmission(w http.ResponseWriter, r *http.Request) {
 	submission := &models.Submission{}
 	err := request.ReadJSON(w, r, submission)
 	if err != nil {

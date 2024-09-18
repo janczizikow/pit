@@ -10,16 +10,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5/pgxpool"
 	zlog "github.com/rs/zerolog/log"
 )
 
 type Server struct {
-	db *sqlx.DB
+	db *pgxpool.Pool
 }
 
 // New instantiates a new server.
-func New(db *sqlx.DB) *Server {
+func New(db *pgxpool.Pool) *Server {
 	return &Server{db: db}
 }
 
