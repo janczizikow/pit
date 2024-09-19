@@ -3,9 +3,11 @@ import { derived, writable } from 'svelte/store';
 
 export const PAGE_SIZE = 50;
 
-export function createSubmissionsStore() {
+type SubmissionsQuery = { page: number; class: string };
+
+export function createSubmissionsStore(initialQuery: SubmissionsQuery) {
 	const isFetching = writable(false);
-	const query = writable({ page: 1, class: '' });
+	const query = writable(initialQuery);
 	const data = writable<SubmissionsResponse>({ data: [], metadata: {} });
 
 	const listSubmissions = async ({
@@ -31,26 +33,8 @@ export function createSubmissionsStore() {
 	return {
 		query,
 		isFetching: isFetching,
-		selected: derived(query, (q) => q.class),
 		subscribe: data.subscribe,
 		data: derived(data, (d) => d),
-		listSubmissions,
-		changePage: (p: number) => {
-			if (p > 0) {
-				query.update((q) => ({ ...q, page: p }));
-			}
-		},
-		selectClass: (cls: string) => {
-			query.update((q) => {
-				if (q.class === cls) {
-					return {
-						page: 1,
-						class: ''
-					};
-				} else {
-					return { page: 1, class: cls };
-				}
-			});
-		}
+		listSubmissions
 	};
 }

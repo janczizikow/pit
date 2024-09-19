@@ -1,25 +1,45 @@
 <script lang="ts">
+	import { afterNavigate, goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import ClassButton from '$lib/ClassButton.svelte';
 	import Table from '$lib/Table.svelte';
 	import video from '$lib/assets/hero.webm';
-	import { onDestroy, onMount } from 'svelte';
-	import { createSubmissionsStore, PAGE_SIZE } from '../lib/store';
+	import { createSubmissionsStore, PAGE_SIZE } from '$lib/store';
 	import Pagination from '$lib/Pagination.svelte';
-	import type { Unsubscriber } from 'svelte/store';
 	import Heading from '$lib/Heading.svelte';
 
-	const { listSubmissions, selected, selectClass, changePage, data, query } =
-		createSubmissionsStore();
-	let unsubscribe: Unsubscriber;
-
-	onMount(() => {
-		unsubscribe = query.subscribe((q) => {
-			listSubmissions({ ...q, classQuery: q.class.toLowerCase() });
-		});
+	const { listSubmissions, data, query } = createSubmissionsStore({
+		page: 1,
+		class: ''
 	});
+	const onChangePage = async (page: number) => {
+		if (page > 0 && !isNaN(page) && Number.isFinite(page)) {
+			const url = $page.url;
+			url.searchParams.set('page', `${page}`);
+			await goto(url, { noScroll: true });
+			window.scrollTo({
+				top: 200,
+				left: 0,
+				behavior: 'smooth'
+			});
+		}
+	};
 
-	onDestroy(() => {
-		unsubscribe?.();
+	afterNavigate(() => {
+		const p = $page.url.searchParams.get('page') || '1';
+		const classQuery = $page.url.searchParams.get('class') || '';
+		let page = parseInt(p);
+		if (page <= 0 || isNaN(page) || !Number.isFinite(page)) {
+			page = 1;
+		}
+		query.set({
+			page,
+			class: classQuery
+		});
+		listSubmissions({
+			page,
+			classQuery: classQuery
+		});
 	});
 </script>
 
@@ -34,18 +54,15 @@
 			achieved and the lowest completion time.
 		</p>
 		<div class="classes">
-			<ClassButton type="BARBARIAN" selected={$selected === 'BARBARIAN'} onClick={selectClass} />
-			<ClassButton type="DRUID" selected={$selected === 'DRUID'} onClick={selectClass} />
-			<ClassButton
-				type="NECROMANCER"
-				selected={$selected === 'NECROMANCER'}
-				onClick={selectClass}
-			/>
-			<ClassButton type="ROGUE" selected={$selected === 'ROGUE'} onClick={selectClass} />
-			<ClassButton type="SORCERER" selected={$selected === 'SORCERER'} onClick={selectClass} />
+			<ClassButton type="barbarian" selected={$query.class === 'barbarian'} />
+			<ClassButton type="druid" selected={$query.class === 'druid'} />
+			<ClassButton type="necromancer" selected={$query.class === 'necromancer'} />
+			<ClassButton type="rogue" selected={$query.class === 'rogue'} />
+			<ClassButton type="sorcerer" selected={$query.class === 'sorcerer'} />
 		</div>
-		<Pagination metadata={$data.metadata} onChangePage={changePage} />
+		<Pagination metadata={$data.metadata} {onChangePage} />
 		<Table data={$data.data} skip={($query.page - 1) * PAGE_SIZE} />
+		<Pagination metadata={$data.metadata} {onChangePage} />
 	</div>
 </div>
 
@@ -82,6 +99,5 @@
 		align-items: center;
 		justify-content: center;
 		gap: 24px;
-		margin-bottom: 64px;
 	}
 </style>

@@ -1,4 +1,4 @@
-<button>
+<button {...$$restProps}>
 	<slot />
 </button>
 
@@ -37,8 +37,12 @@
 			border-color 0.1s ease;
 	}
 
-	button:hover {
+	button:not(:disabled):hover {
 		cursor: pointer;
 		background-color: #dd0707;
+	}
+
+	button:disabled {
+		cursor: not-allowed;
 	}
 </style>

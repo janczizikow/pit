@@ -1,3 +1,13 @@
+export interface NewSubmission {
+	name: string;
+	class: string;
+	mode: string;
+	tier: number;
+	duration: number;
+	video: string;
+	build?: string;
+}
+
 export interface Submission {
 	id: number;
 	name: string;
