@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/janczizikow/pit/internal/database"
 	"github.com/janczizikow/pit/internal/server"
 	"github.com/rs/zerolog"
@@ -11,6 +12,7 @@ import (
 )
 
 func main() {
+	SENTRY_DSN := os.Getenv("SENTRY_DSN")
 	DB_HOST := os.Getenv("DB_HOST")
 	DB_PORT := os.Getenv("DB_PORT")
 	DB_USER := os.Getenv("DB_USER")
@@ -21,6 +23,20 @@ func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	log.Info().Msg("starting server")
+	if SENTRY_DSN != "" {
+		if err := sentry.Init(sentry.ClientOptions{
+			Dsn:         SENTRY_DSN,
+			Environment: "production",
+			// Set TracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+			// We recommend adjusting this value in production,
+			TracesSampleRate: 1.0,
+		}); err != nil {
+			log.Error().Err(err).Msg("Sentry initialization failed")
+		}
+	} else {
+		log.Info().Msg("SENTRY_DSN not set, skipping Sentry initialization")
+	}
+
 	log.Info().Msg("connecting to postgres DB")
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DB_SSL_MODE)
