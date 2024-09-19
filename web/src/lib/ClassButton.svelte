@@ -3,8 +3,8 @@
 	export let selected: boolean;
 	export let onSelectClass: (cls: string) => void;
 
-	const src = `classes/base/${type}.webp`;
-	const hoveredSRC = `classes/hover/${type}.webp`;
+	const src = `/classes/base/${type.toUpperCase()}.webp`;
+	const hoveredSRC = `/classes/hover/${type.toUpperCase()}.webp`;
 
 	let hovered = false;
 	function onHover() {
