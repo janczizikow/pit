@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/Heading.svelte';
 	import Text from '$lib/Text.svelte';
+	import SubmissionForm from '$lib/SubmissionForm.svelte';
 </script>
 
 <svelte:head>
@@ -11,4 +12,4 @@
 	Submit a video as proof of a successful pit run. The video will be verified and added to the
 	leaderboard.
 </Text>
-<Text>Submissions functionality is currently in development 🚧</Text>
+<SubmissionForm />
