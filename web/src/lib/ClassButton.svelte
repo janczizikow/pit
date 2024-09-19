@@ -1,34 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { afterUpdate, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
-
 	export let type: string;
 	export let selected: boolean;
+	export let onSelectClass: (cls: string) => void;
 
-	let url = writable('/');
 	const src = `classes/base/${type}.webp`;
 	const hoveredSRC = `classes/hover/${type}.webp`;
-
-	function syncURLState() {
-		const link = new URL($page.url);
-		if (selected) {
-			link.searchParams.delete('class');
-			link.searchParams.delete('page');
-		} else {
-			link.searchParams.set('class', type);
-			link.searchParams.set('page', '1');
-		}
-		url.set(link.toString());
-	}
-
-	onMount(() => {
-		syncURLState();
-	});
-
-	afterUpdate(() => {
-		syncURLState();
-	});
 
 	let hovered = false;
 	function onHover() {
@@ -39,19 +15,19 @@
 	}
 </script>
 
-<a
-	href={$url}
+<button
 	on:mouseover={selected ? null : onHover}
 	on:focus={selected ? null : onHover}
 	on:mouseout={selected ? null : onBlur}
 	on:blur={selected ? null : onBlur}
+	on:click={() => onSelectClass(type)}
 	style="background-image: url({selected || hovered ? hoveredSRC : src})"
 >
-	<span class="hidden">{type}</span></a
+	<span class="hidden">{type}</span></button
 >
 
 <style>
-	a {
+	button {
 		all: unset;
 		cursor: pointer;
 		height: 64px;
@@ -60,7 +36,7 @@
 	}
 
 	@media only screen and (max-width: 800px) {
-		a {
+		button {
 			height: 56px;
 			width: 56px;
 		}

@@ -12,6 +12,22 @@
 		page: 1,
 		class: ''
 	});
+	const onChangeClass = async (cls: string) => {
+		const link = new URL($page.url);
+		if ($query.class === cls) {
+			link.searchParams.delete('class');
+			link.searchParams.delete('page');
+		} else {
+			link.searchParams.set('class', cls);
+			link.searchParams.set('page', '1');
+		}
+		await goto(link.toString(), { noScroll: true });
+		window.scrollTo({
+			top: 200,
+			left: 0,
+			behavior: 'smooth'
+		});
+	};
 	const onChangePage = async (page: number) => {
 		if (page > 0 && !isNaN(page) && Number.isFinite(page)) {
 			const url = $page.url;
@@ -38,7 +54,7 @@
 		});
 		listSubmissions({
 			page,
-			classQuery: classQuery
+			classQuery
 		});
 	});
 </script>
@@ -54,11 +70,23 @@
 			achieved and the lowest completion time.
 		</p>
 		<div class="classes">
-			<ClassButton type="barbarian" selected={$query.class === 'barbarian'} />
-			<ClassButton type="druid" selected={$query.class === 'druid'} />
-			<ClassButton type="necromancer" selected={$query.class === 'necromancer'} />
-			<ClassButton type="rogue" selected={$query.class === 'rogue'} />
-			<ClassButton type="sorcerer" selected={$query.class === 'sorcerer'} />
+			<ClassButton
+				type="barbarian"
+				selected={$query.class === 'barbarian'}
+				onSelectClass={onChangeClass}
+			/>
+			<ClassButton type="druid" selected={$query.class === 'druid'} onSelectClass={onChangeClass} />
+			<ClassButton
+				type="necromancer"
+				selected={$query.class === 'necromancer'}
+				onSelectClass={onChangeClass}
+			/>
+			<ClassButton type="rogue" selected={$query.class === 'rogue'} onSelectClass={onChangeClass} />
+			<ClassButton
+				type="sorcerer"
+				selected={$query.class === 'sorcerer'}
+				onSelectClass={onChangeClass}
+			/>
 		</div>
 		<Pagination metadata={$data.metadata} {onChangePage} />
 		<Table data={$data.data} skip={($query.page - 1) * PAGE_SIZE} />
