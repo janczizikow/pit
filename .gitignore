@@ -89,4 +89,5 @@ Temporary Items
 bin
 
 # seed data
+data.json
 data.csv
