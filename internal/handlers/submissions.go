@@ -45,6 +45,13 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	v := validator.New()
+	v.Check(validator.In(class, "", models.Barbarian, models.Druid, models.Necromancer, models.Rogue, models.Sorcerer), "class", "is invalid")
+
+	if !v.Valid() {
+		class = ""
+	}
+
 	paginator := request.NewPaginator(size, page, sort, map[string]bool{
 		"duration":  true,
 		"tier":      true,
@@ -58,7 +65,6 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 
 	submissions, total, err := h.repo.List(paginator.Limit(), paginator.Offset(), class, paginator.Sort())
 	if err != nil {
-		// TODO: handle enum errors
 		response.InternalServerErrorResponse(w, r)
 		return
 	}
