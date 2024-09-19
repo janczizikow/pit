@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/janczizikow/pit/internal/handlers"
 	"github.com/janczizikow/pit/internal/http/middleware"
@@ -13,8 +14,8 @@ func Router(s *Server) http.Handler {
 
 	repo := repository.New(s.db)
 	submissionsHandler := handlers.NewSubmissionsHandler(repo.Submissions)
-
-	static := http.FileServer(http.Dir("./web/build"))
+	path := os.Getenv("WEB_ROOT")
+	static := http.FileServer(http.Dir(path))
 	mux.Handle("/", static)
 	mux.Handle("/submission", static)
 	mux.HandleFunc("GET /api/v1/submissions", submissionsHandler.ListSubmissions)
