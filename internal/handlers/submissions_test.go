@@ -72,3 +72,20 @@ func TestCreateSubmissionHandler(t *testing.T) {
 		assert.Equal(t, http.StatusCreated, rr.Code)
 	})
 }
+
+func TestListSubmissionsHandler(t *testing.T) {
+	t.Run("returns 200 for a valid request", func(t *testing.T) {
+		repo := repository.NewSubmissionsRepository(db)
+		submissionsHandler := handlers.NewSubmissionsHandler(repo)
+
+		req, err := http.NewRequest("GET", "/api/v1/submissions", strings.NewReader(``))
+		require.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		mux := http.NewServeMux()
+		mux.HandleFunc("GET /api/v1/submissions", submissionsHandler.ListSubmissions)
+
+		mux.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusOK, rr.Code)
+	})
+}
