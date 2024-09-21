@@ -10,6 +10,7 @@
 
 	const { listSubmissions, data, query } = createSubmissionsStore({
 		page: 1,
+		mode: 'softcore',
 		class: ''
 	});
 	const onChangeClass = async (cls: string) => {
@@ -44,17 +45,20 @@
 	afterNavigate(() => {
 		const p = $page.url.searchParams.get('page') || '1';
 		const classQuery = $page.url.searchParams.get('class') || '';
+		const mode = $page.url.searchParams.get('mode') || 'softcore';
 		let page = parseInt(p);
 		if (page <= 0 || isNaN(page) || !Number.isFinite(page)) {
 			page = 1;
 		}
 		query.set({
 			page,
-			class: classQuery
+			class: classQuery,
+			mode
 		});
 		listSubmissions({
 			page,
-			classQuery
+			classQuery,
+			mode
 		});
 	});
 </script>
