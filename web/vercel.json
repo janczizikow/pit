@@ -1,0 +1,9 @@
+{
+	"redirects": [
+		{
+			"source": "/(.*)",
+			"destination": "https://pit-796768497423.europe-west3.run.app",
+			"permanent": true
+		}
+	]
+}
