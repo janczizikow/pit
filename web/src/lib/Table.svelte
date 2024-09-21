@@ -52,14 +52,11 @@
 				<td class="tier">{submission.tier}</td>
 				<td class="time">{formatSeconds(submission.duration)}</td>
 				<td class="link-column">
-					<a href={submission.video} target="_blank" rel="noopener noreferrer">{submission.video}</a
-					>
+					<a href={submission.video} target="_blank" rel="noopener noreferrer">Video</a>
 				</td>
 				<td class="link-column">
 					{#if submission.build}
-						<a href={submission.build} target="_blank" rel="noopener noreferrer"
-							>{submission.build}</a
-						>
+						<a href={submission.build} target="_blank" rel="noopener noreferrer">Build</a>
 					{:else}
 						-
 					{/if}
@@ -81,6 +78,24 @@
 		color: hsla(0, 0%, 100%, 0.8);
 		/* color: var(--text-default); */
 		background-color: #000;
+	}
+
+	table a {
+		color: #39a9f7;
+		text-decoration: none;
+		transition: all 0.2s ease-out;
+		text-decoration: underline;
+		text-underline-position: under;
+	}
+
+	table a:hover {
+		color: #fff;
+		text-decoration: none;
+	}
+
+	table a:focus {
+		outline: 0 none;
+		outline-offset: 0;
 	}
 
 	table thead th {

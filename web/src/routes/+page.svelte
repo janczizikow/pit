@@ -65,7 +65,7 @@
 
 <div>
 	<div class="video-container">
-		<video autoplay loop muted>
+		<video autoplay loop muted playsinline>
 			<source src={video} type="video/webm" />
 		</video>
 		<Heading>Solo Pit Ladder</Heading>
