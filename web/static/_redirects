@@ -1,5 +1,5 @@
 # These rules will change if you change your site’s custom domains or HTTPS settings
 
 # Redirect default Netlify subdomain to primary domain
-https://diablo4pit.netlify.com/* https://pit-796768497423.europe-west3.run.app 301!
-https://diablo4pit.netlify.app/* https://pit-796768497423.europe-west3.run.app 301!
+https://diablo4pit.netlify.com/* https://diablo4pit.web.app 301!
+https://diablo4pit.netlify.app/* https://diablo4pit.web.app 301!
