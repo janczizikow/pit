@@ -62,7 +62,9 @@
 				</td>
 				<td class="link-column">
 					{#if submission.build}
-						<a href={submission.build} target="_blank" rel="noopener noreferrer">Build</a>
+						<a href={formatLink(submission.build)} target="_blank" rel="noopener noreferrer"
+							>Build</a
+						>
 					{:else}
 						-
 					{/if}
