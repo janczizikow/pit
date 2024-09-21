@@ -2,9 +2,11 @@
 	import Button from '$lib/Button.svelte';
 	import type { NewSubmission, NewSubmissionRaw } from '$lib/types';
 	import Label from '$lib/Label.svelte';
+	import { derived, writable } from 'svelte/store';
 
-	export let onSubmit: (data: NewSubmission) => void;
-	let form: NewSubmissionRaw = {
+	export let isSubmitting: boolean;
+	export let onSubmit: (data: NewSubmission) => Promise<boolean>;
+	const initialData = {
 		name: '',
 		class: '',
 		mode: '',
@@ -13,51 +15,63 @@
 		video: '',
 		build: ''
 	};
-	export let isSubmitting: boolean;
+	const form = writable<NewSubmissionRaw>(initialData);
+	const isValid = derived(form, (data) => Object.keys(validate(data)).length === 0);
+	const handleSubmit = async () => {
+		const shouldReset = await onSubmit(parseData($form));
+		if (shouldReset) {
+			form.set({
+				name: '',
+				class: '',
+				mode: '',
+				tier: '',
+				duration: '',
+				video: '',
+				build: ''
+			});
+			alert('Submission successful');
+		}
+	};
 	function validate(data: NewSubmissionRaw) {
 		const errs: Partial<NewSubmissionRaw> = {};
 		if (!data.name) {
-			data.name = 'Required';
+			errs.name = 'Required';
 		}
 		if (!data.class) {
-			data.class = 'Required';
+			errs.class = 'Required';
 		}
 		if (!data.mode) {
-			data.mode = 'Required';
+			errs.mode = 'Required';
 		}
 		if (!data.tier) {
-			data.tier = 'Required';
+			errs.tier = 'Required';
 		}
 		if (!data.duration) {
-			data.duration = 'Required';
+			errs.duration = 'Required';
 		}
 		if (!data.video) {
-			data.video = 'Required';
+			errs.video = 'Required';
 		}
 
 		return errs;
 	}
 	function toSeconds(str: string) {
-		return 900;
+		const [m, s] = str.split(':');
+		return parseInt(m) * 60 + parseInt(s);
 	}
 	function parseData(raw: NewSubmissionRaw): NewSubmission {
 		return { ...raw, tier: parseInt(raw.tier, 10), duration: toSeconds(raw.duration) };
 	}
 </script>
 
-<form
-	class="container"
-	on:submit|preventDefault={(e) => {
-		onSubmit(parseData(form));
-	}}
->
+<form class="container" on:submit|preventDefault={handleSubmit}>
 	<div class="field">
 		<Label for="name">Name*</Label>
-		<input name="name" bind:value={form.name} required />
+		<input name="name" bind:value={$form.name} required />
 	</div>
 	<div class="field">
 		<Label for="class">Class*</Label>
-		<select name="class" bind:value={form.class} required>
+		<select name="class" bind:value={$form.class} required>
 			<option value="barbarian">Barbarian</option>
 			<option value="druid">Druid</option>
 			<option value="necromancer">Necromancer</option>
@@ -67,28 +81,28 @@
 	</div>
 	<div class="field">
 		<Label for="mode">Mode*</Label>
-		<select name="mode" bind:value={form.mode} required>
+		<select name="mode" bind:value={$form.mode} required>
 			<option value="softcore">Softcore</option>
 			<option value="hardcore">Hardcore</option>
 		</select>
 	</div>
 	<div class="field">
 		<Label for="tier">Tier*</Label>
-		<input name="tier" bind:value={form.tier} required placeholder="150" />
+		<input name="tier" bind:value={$form.tier} required placeholder="150" />
 	</div>
 	<div class="field">
 		<Label for="time">Time*</Label>
-		<input name="time" bind:value={form.duration} required placeholder="12:43" />
+		<input name="time" bind:value={$form.duration} required placeholder="12:43" />
 	</div>
 	<div class="field">
 		<Label for="video">Video*</Label>
-		<input name="video" bind:value={form.video} required />
+		<input name="video" bind:value={$form.video} required />
 	</div>
 	<div class="field">
 		<Label for="build">Build</Label>
-		<input name="build" bind:value={form.build} />
+		<input name="build" bind:value={$form.build} />
 	</div>
-	<Button type="submit" disabled={isSubmitting}>Submit</Button>
+	<Button type="submit" disabled={isSubmitting || !$isValid}>Submit</Button>
 </form>
 
 <style>

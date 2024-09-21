@@ -21,8 +21,10 @@
 			if (res.status >= 300) {
 				throw json;
 			}
+			return true;
 		} catch (err) {
 			error.set(err as APIError);
+			return false;
 		} finally {
 			isSubmitting.set(false);
 		}
@@ -37,6 +39,7 @@
 	Submit a video as proof of a successful pit run. The video will be verified and added to the
 	leaderboard.
 </Text>
+<Text>Submissions functionality is currently in development 🚧</Text>
 <div class="container">
 	<ErrorMessage error={$error} />
 </div>
