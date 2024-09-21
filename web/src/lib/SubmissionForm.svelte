@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/Button.svelte';
 	import type { NewSubmission, NewSubmissionRaw } from '$lib/types';
-	import Label from './Label.svelte';
+	import Label from '$lib/Label.svelte';
 
 	export let onSubmit: (data: NewSubmission) => void;
 	let form: NewSubmissionRaw = {
@@ -13,7 +13,7 @@
 		video: '',
 		build: ''
 	};
-	let isSubmitting = false;
+	export let isSubmitting: boolean;
 	function validate(data: NewSubmissionRaw) {
 		const errs: Partial<NewSubmissionRaw> = {};
 		if (!data.name) {
@@ -88,7 +88,6 @@
 		<Label for="build">Build</Label>
 		<input name="build" bind:value={form.build} />
 	</div>
-
 	<Button type="submit" disabled={isSubmitting}>Submit</Button>
 </form>
 

@@ -42,3 +42,8 @@ export interface SubmissionsResponse {
 	data: Submission[];
 	metadata: PaginationMetadata;
 }
+
+export interface APIError {
+	status: number;
+	errors: { error: string; param: string }[];
+}

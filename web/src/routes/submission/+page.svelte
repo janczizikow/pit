@@ -2,16 +2,30 @@
 	import Heading from '$lib/Heading.svelte';
 	import Text from '$lib/Text.svelte';
 	import SubmissionForm from '$lib/SubmissionForm.svelte';
-	import type { NewSubmission } from '$lib/types';
+	import type { APIError, NewSubmission } from '$lib/types';
+	import { writable } from 'svelte/store';
+	import ErrorMessage from '$lib/ErrorMessage.svelte';
+
+	const isSubmitting = writable(false);
+	let error = writable<APIError | null>(null);
 
 	const handleSubmit = async (data: NewSubmission) => {
 		try {
+			isSubmitting.set(true);
+			error.set(null);
 			const res = await fetch('/api/v1/submissions', {
 				method: 'POST',
 				body: JSON.stringify(data)
 			});
 			const json = await res.json();
-		} catch {}
+			if (res.status >= 300) {
+				throw json;
+			}
+		} catch (err) {
+			error.set(err as APIError);
+		} finally {
+			isSubmitting.set(false);
+		}
 	};
 </script>
 
@@ -23,4 +37,14 @@
 	Submit a video as proof of a successful pit run. The video will be verified and added to the
 	leaderboard.
 </Text>
-<SubmissionForm onSubmit={handleSubmit} />
+<div class="container">
+	<ErrorMessage error={$error} />
+</div>
+<SubmissionForm isSubmitting={$isSubmitting} onSubmit={handleSubmit} />
+
+<style>
+	.container {
+		margin: 0 auto;
+		max-width: var(--container-width);
+	}
+</style>
