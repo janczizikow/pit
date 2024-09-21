@@ -12,15 +12,14 @@ import (
 )
 
 type SubmissionParsed struct {
-	Timestamp time.Time `json:"Timestamp"`
-	Date      time.Time `json:"Date"`
-	Tier      int       `json:"Tier"`
-	Duration  string    `json:"Time Used"`
-	Name      string    `json:"Player"`
-	Class     string    `json:"Class"`
-	Mode      string    `json:"Mode"`
-	Video     string    `json:"Run Video"`
-	Build     string    `json:"Build Planner"`
+	Date     string `json:"Date"`
+	Tier     string `json:"Tier"`
+	Duration string `json:"Time Used"`
+	Name     string `json:"Player"`
+	Class    string `json:"Class"`
+	Mode     string `json:"Mode"`
+	Video    string `json:"Run Video"`
+	Build    string `json:"Build Planner"`
 }
 type SubmissionsParsed []*SubmissionParsed
 
@@ -70,16 +69,24 @@ func main() {
 				log.Fatal("Error when parsing duration: ", err)
 			}
 		}
+		date := strings.Split(v.Date, "/")
+		if len(date[1]) == 1 {
+			date[1] = fmt.Sprintf("0%s", date[1])
+		}
+		t, err := time.Parse(time.DateOnly, fmt.Sprintf("%s-0%s-%s", date[2], date[0], date[1]))
+		if err != nil {
+			log.Fatal("Error when parsing date: ", err)
+		}
 		data = append(data, []string{
 			v.Name,
 			strings.ToLower(v.Class),
-			strconv.FormatInt(int64(v.Tier), 10),
+			v.Tier,
 			mode,
 			v.Build,
 			v.Video,
 			strconv.FormatInt(int64(duration.Seconds()), 10),
-			v.Date.Format(time.RFC3339),
-			v.Date.Format(time.RFC3339),
+			t.Format(time.RFC3339),
+			t.Format(time.RFC3339),
 		})
 	}
 	writer.WriteAll(data)
