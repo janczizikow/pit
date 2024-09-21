@@ -178,6 +178,25 @@
   dependencies:
     levn "^0.4.1"
 
+"@felte/common@1.1.8":
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/@felte/common/-/common-1.1.8.tgz#5cabf3ad996772c7952b9879f742ba1cfbc12917"
+  integrity sha512-VbEOfNLWfDx0SpCfeE+fNWDpvcntND4MFs7Lxd18RIjrZYH82D0wWe9th2oVF9QT5XzgBEdMF5NGIttcwU4sjg==
+
+"@felte/core@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@felte/core/-/core-1.4.3.tgz#bfe7fabd2058b2378bf202110e207c772818e775"
+  integrity sha512-DoXTuHD4atDG0SfTfI4orllcnriHRgM/ijMdRsUbLPL7O/UWGSWNXkxErx7XPbWOXMjX0J79KLfxZzm9abOCxw==
+  dependencies:
+    "@felte/common" "1.1.8"
+
+"@felte/validator-zod@^1.0.17":
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/@felte/validator-zod/-/validator-zod-1.0.17.tgz#f83c897867d11ceba9120be410b4b906789bce7e"
+  integrity sha512-rOX1chLfTcixKMPEdrMSi8zsCM685Dsoy1a5qN1G6Fyh7HYK1vSmI6SfJ7m92DOt6kV+vAP4m5rk94Y8UFIeVw==
+  dependencies:
+    "@felte/common" "1.1.8"
+
 "@humanwhocodes/module-importer@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/module-importer/-/module-importer-1.0.1.tgz#af5b2691a22b44be847b0ca81641c5fb6ad0172c"
@@ -923,6 +942,13 @@ fdir@^6.2.0:
   resolved "https://registry.yarnpkg.com/fdir/-/fdir-6.3.0.tgz#fcca5a23ea20e767b15e081ee13b3e6488ee0bb0"
   integrity sha512-QOnuT+BOtivR77wYvCWHfGt9s4Pz1VIMbD463vegT5MLqNXy8rYFT/lPVEqf/bhYeT6qmqrNHhsX+rWwe3rOCQ==
 
+felte@^1.2.14:
+  version "1.2.14"
+  resolved "https://registry.yarnpkg.com/felte/-/felte-1.2.14.tgz#5a96cbe6960c8c61f128829cca98776e6e9c426b"
+  integrity sha512-eRByCSKhmvrkPOFQyCEGNx/DmP54nERvWwybyMcBSxlVXvsmDA7mDjXTJTuXFeKaemTehNvZE4tzf/xXLSE3HQ==
+  dependencies:
+    "@felte/core" "1.4.3"
+
 file-entry-cache@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-8.0.0.tgz#7787bddcf1131bffb92636c69457bbc0edd6d81f"
@@ -1617,3 +1643,8 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@^3.23.8:
+  version "3.23.8"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
+  integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==

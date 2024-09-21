@@ -6,12 +6,10 @@
 	import { writable } from 'svelte/store';
 	import ErrorMessage from '$lib/ErrorMessage.svelte';
 
-	const isSubmitting = writable(false);
 	let error = writable<APIError | null>(null);
 
 	const handleSubmit = async (data: NewSubmission) => {
 		try {
-			isSubmitting.set(true);
 			error.set(null);
 			const res = await fetch('/api/v1/submissions', {
 				method: 'POST',
@@ -25,8 +23,6 @@
 		} catch (err) {
 			error.set(err as APIError);
 			return false;
-		} finally {
-			isSubmitting.set(false);
 		}
 	};
 </script>
@@ -39,11 +35,10 @@
 	Submit a video as proof of a successful pit run. The video will be verified and added to the
 	leaderboard.
 </Text>
-<Text>Submissions functionality is currently in development 🚧</Text>
 <div class="container">
 	<ErrorMessage error={$error} />
 </div>
-<SubmissionForm isSubmitting={$isSubmitting} onSubmit={handleSubmit} />
+<SubmissionForm onSubmit={handleSubmit} />
 
 <style>
 	.container {
