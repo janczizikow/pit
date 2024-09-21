@@ -11,7 +11,6 @@
 				body: JSON.stringify(data)
 			});
 			const json = await res.json();
-			console.log(json);
 		} catch {}
 	};
 </script>

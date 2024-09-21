@@ -9,7 +9,7 @@
 		<img src={logo} alt="Diablo IV" />
 	</a>
 
-	{#if $page.url.pathname !== '/submission'}
+	{#if !$page.url.pathname.includes('/submission')}
 		<a href="/submission" class="link">
 			<Button>Submit new run</Button>
 		</a>

@@ -54,7 +54,8 @@ func (r *submissionsRepository) List(params ListSubmissionsParams) ([]*models.Su
 															FROM submissions
 															ORDER BY name ASC, class ASC, %s
 														) sub
-												WHERE ($1 = '' OR class = $1::class)
+												WHERE verified = true
+												AND ($1 = '' OR class = $1::class)
 												AND ($2 = '' OR mode = $2::mode)
 												ORDER BY %s
 												LIMIT $3 OFFSET $4;`, params.OrderBy, params.OrderBy)
@@ -75,7 +76,8 @@ func (r *submissionsRepository) List(params ListSubmissionsParams) ([]*models.Su
 									FROM submissions
 									ORDER BY name ASC, class ASC, tier DESC, duration ASC
 								) sub
-						WHERE ($1 = '' OR class = $1::class)
+						WHERE verified = true
+						AND ($1 = '' OR class = $1::class)
 						AND ($2 = '' OR mode = $2::mode)
 						ORDER BY id DESC
 						LIMIT $3 OFFSET $4;`
