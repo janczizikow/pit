@@ -1,6 +1,34 @@
 <script lang="ts">
 	import Heading from '$lib/Heading.svelte';
 	import Text from '$lib/Text.svelte';
+	import SubmissionForm from '$lib/SubmissionForm.svelte';
+	import type { APIError, NewSubmission } from '$lib/types';
+	import { writable } from 'svelte/store';
+	import ErrorMessage from '$lib/ErrorMessage.svelte';
+
+	const isSubmitting = writable(false);
+	let error = writable<APIError | null>(null);
+
+	const handleSubmit = async (data: NewSubmission) => {
+		try {
+			isSubmitting.set(true);
+			error.set(null);
+			const res = await fetch('/api/v1/submissions', {
+				method: 'POST',
+				body: JSON.stringify(data)
+			});
+			const json = await res.json();
+			if (res.status >= 300) {
+				throw json;
+			}
+			return true;
+		} catch (err) {
+			error.set(err as APIError);
+			return false;
+		} finally {
+			isSubmitting.set(false);
+		}
+	};
 </script>
 
 <svelte:head>
@@ -12,3 +40,14 @@
 	leaderboard.
 </Text>
 <Text>Submissions functionality is currently in development 🚧</Text>
+<div class="container">
+	<ErrorMessage error={$error} />
+</div>
+<SubmissionForm isSubmitting={$isSubmitting} onSubmit={handleSubmit} />
+
+<style>
+	.container {
+		margin: 0 auto;
+		max-width: var(--container-width);
+	}
+</style>

@@ -7,6 +7,15 @@ export interface NewSubmission {
 	video: string;
 	build?: string;
 }
+export interface NewSubmissionRaw {
+	name: string;
+	class: string;
+	mode: string;
+	tier: string;
+	duration: string;
+	video: string;
+	build?: string;
+}
 
 export interface Submission {
 	id: number;
@@ -32,4 +41,9 @@ export interface PaginationMetadata {
 export interface SubmissionsResponse {
 	data: Submission[];
 	metadata: PaginationMetadata;
+}
+
+export interface APIError {
+	status: number;
+	errors: { error: string; param: string }[];
 }

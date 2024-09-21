@@ -25,7 +25,11 @@ export function createSubmissionsStore(initialQuery: SubmissionsQuery) {
 				`/api/v1/submissions?page=${page}&size=${PAGE_SIZE}&class=${classQuery}&mode=${mode}&sort=-tier,duration`
 			);
 			const json = await res.json();
-			data.set(json);
+			if (res.status >= 300) {
+				throw json;
+			} else {
+				data.set(json);
+			}
 		} catch {
 			// TODO:
 		}
