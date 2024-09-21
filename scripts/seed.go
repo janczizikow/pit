@@ -20,6 +20,7 @@ type SubmissionParsed struct {
 	Mode     string `json:"Mode"`
 	Video    string `json:"Run Video"`
 	Build    string `json:"Build Planner"`
+	Verified string `json:"Validate"`
 }
 type SubmissionsParsed []*SubmissionParsed
 
@@ -43,7 +44,7 @@ func main() {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	headers := []string{"name", "class", "tier", "mode", "build", "video", "duration", "created_at", "updated_at"}
+	headers := []string{"name", "class", "tier", "mode", "build", "video", "duration", "verified", "created_at", "updated_at"}
 	writer.Write(headers)
 	data := [][]string{}
 	for _, v := range s {
@@ -70,10 +71,10 @@ func main() {
 			}
 		}
 		date := strings.Split(v.Date, "/")
-		if len(date[1]) == 1 {
-			date[1] = fmt.Sprintf("0%s", date[1])
+		if len(date[0]) == 1 {
+			date[0] = fmt.Sprintf("0%s", date[0])
 		}
-		t, err := time.Parse(time.DateOnly, fmt.Sprintf("%s-0%s-%s", date[2], date[0], date[1]))
+		created, err := time.Parse(time.DateOnly, fmt.Sprintf("%s-%s-%s", date[2], date[0], date[1]))
 		if err != nil {
 			log.Fatal("Error when parsing date: ", err)
 		}
@@ -85,8 +86,9 @@ func main() {
 			v.Build,
 			v.Video,
 			strconv.FormatInt(int64(duration.Seconds()), 10),
-			t.Format(time.RFC3339),
-			t.Format(time.RFC3339),
+			strconv.FormatBool(v.Verified == "y"),
+			created.Format(time.RFC3339),
+			created.Format(time.RFC3339),
 		})
 	}
 	writer.WriteAll(data)

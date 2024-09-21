@@ -90,4 +90,5 @@ bin
 
 # seed data
 data.json
+all.json
 data.csv
