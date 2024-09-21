@@ -30,6 +30,7 @@ type Submission struct {
 	Build    string `db:"build" json:"build"`
 	Video    string `db:"video" json:"video"`
 	Duration int    `db:"duration" json:"duration"`
+	Verified bool   `db:"verified" json:"-"`
 	// Timestamps
 
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
