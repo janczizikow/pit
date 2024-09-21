@@ -7,6 +7,8 @@
 	import { createSubmissionsStore, PAGE_SIZE } from '$lib/store';
 	import Pagination from '$lib/Pagination.svelte';
 	import Heading from '$lib/Heading.svelte';
+	import HardcoreButton from '$lib/HardcoreButton.svelte';
+	import Text from '$lib/Text.svelte';
 
 	const { listSubmissions, data, query } = createSubmissionsStore({
 		page: 1,
@@ -20,7 +22,7 @@
 			link.searchParams.delete('page');
 		} else {
 			link.searchParams.set('class', cls);
-			link.searchParams.set('page', '1');
+			link.searchParams.delete('page');
 		}
 		await goto(link.toString(), { noScroll: true });
 		window.scrollTo({
@@ -31,7 +33,7 @@
 	};
 	const onChangePage = async (page: number) => {
 		if (page > 0 && !isNaN(page) && Number.isFinite(page)) {
-			const url = $page.url;
+			const url = new URL($page.url);
 			url.searchParams.set('page', `${page}`);
 			await goto(url, { noScroll: true });
 			window.scrollTo({
@@ -40,6 +42,21 @@
 				behavior: 'smooth'
 			});
 		}
+	};
+	const onToggleHC = async () => {
+		const url = new URL($page.url);
+		if (url.searchParams.get('mode')) {
+			url.searchParams.delete('mode');
+		} else {
+			url.searchParams.set('mode', 'hardcore');
+		}
+		url.searchParams.delete('page');
+		await goto(url, { noScroll: true });
+		window.scrollTo({
+			top: 200,
+			left: 0,
+			behavior: 'smooth'
+		});
 	};
 
 	afterNavigate(() => {
@@ -63,34 +80,48 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Diablo 4 Pit - Leaderboard</title>
+</svelte:head>
 <div>
 	<div class="video-container">
 		<video autoplay loop muted playsinline>
 			<source src={video} type="video/webm" />
 		</video>
 		<Heading>Solo Pit Ladder</Heading>
-		<p>
+		<Text>
 			Best community seasonal pit leaderboard. Rankings are determined by the highest tier level
 			achieved and the lowest completion time.
-		</p>
-		<div class="classes">
-			<ClassButton
-				type="barbarian"
-				selected={$query.class === 'barbarian'}
-				onSelectClass={onChangeClass}
-			/>
-			<ClassButton type="druid" selected={$query.class === 'druid'} onSelectClass={onChangeClass} />
-			<ClassButton
-				type="necromancer"
-				selected={$query.class === 'necromancer'}
-				onSelectClass={onChangeClass}
-			/>
-			<ClassButton type="rogue" selected={$query.class === 'rogue'} onSelectClass={onChangeClass} />
-			<ClassButton
-				type="sorcerer"
-				selected={$query.class === 'sorcerer'}
-				onSelectClass={onChangeClass}
-			/>
+		</Text>
+		<div class="flex">
+			<HardcoreButton selected={$query.mode === 'hardcore'} {onToggleHC} />
+			<div class="flex classes">
+				<ClassButton
+					type="barbarian"
+					selected={$query.class === 'barbarian'}
+					onSelectClass={onChangeClass}
+				/>
+				<ClassButton
+					type="druid"
+					selected={$query.class === 'druid'}
+					onSelectClass={onChangeClass}
+				/>
+				<ClassButton
+					type="necromancer"
+					selected={$query.class === 'necromancer'}
+					onSelectClass={onChangeClass}
+				/>
+				<ClassButton
+					type="rogue"
+					selected={$query.class === 'rogue'}
+					onSelectClass={onChangeClass}
+				/>
+				<ClassButton
+					type="sorcerer"
+					selected={$query.class === 'sorcerer'}
+					onSelectClass={onChangeClass}
+				/>
+			</div>
 		</div>
 		<Pagination metadata={$data.metadata} {onChangePage} />
 		<Table data={$data.data} skip={($query.page - 1) * PAGE_SIZE} />
@@ -114,22 +145,14 @@
 		z-index: -1;
 	}
 
-	p {
-		margin: 0 auto;
-		max-width: 480px;
-		margin-bottom: 32px;
-		text-align: center;
-		font-family: var(--font-default);
-		font-weight: 500;
-		font-size: 16px;
-		text-shadow: 3px 5px 5px rgba(0, 0, 0, 0.5);
-		color: var(--text-default);
-	}
-
-	.classes {
+	.flex {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.classes {
+		padding-left: 32px;
 		gap: 24px;
 	}
 </style>

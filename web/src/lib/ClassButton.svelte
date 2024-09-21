@@ -23,6 +23,7 @@
 	on:click={() => onSelectClass(type)}
 	style="background-image: url({selected || hovered ? hoveredSRC : src})"
 >
+	<img src={selected || hovered ? src : hoveredSRC} alt="" class="hidden" />
 	<span class="hidden">{type}</span></button
 >
 

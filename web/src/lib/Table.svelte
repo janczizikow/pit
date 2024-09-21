@@ -12,6 +12,12 @@
 	function formatDate(date: string) {
 		return new Date(date).toLocaleDateString();
 	}
+	function formatLink(link: string) {
+		if (link.startsWith('http')) {
+			return link;
+		}
+		return `https://${link}`;
+	}
 </script>
 
 <table>
@@ -52,7 +58,7 @@
 				<td class="tier">{submission.tier}</td>
 				<td class="time">{formatSeconds(submission.duration)}</td>
 				<td class="link-column">
-					<a href={submission.video} target="_blank" rel="noopener noreferrer">Video</a>
+					<a href={formatLink(submission.video)} target="_blank" rel="noopener noreferrer">Video</a>
 				</td>
 				<td class="link-column">
 					{#if submission.build}
