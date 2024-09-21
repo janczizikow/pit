@@ -5,5 +5,8 @@
 			"destination": "https://diablo4pit.web.app",
 			"permanent": true
 		}
-	]
+	],
+	"git": {
+		"deploymentEnabled": false
+	}
 }
