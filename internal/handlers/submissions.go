@@ -44,12 +44,20 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 		response.BadRequestResponse(w, r, err)
 		return
 	}
+	mode, err := request.QueryString(r, "mode", "")
+	if err != nil {
+		response.BadRequestResponse(w, r, err)
+		return
+	}
 
 	v := validator.New()
 	v.Check(validator.In(class, "", models.Barbarian, models.Druid, models.Necromancer, models.Rogue, models.Sorcerer), "class", "is invalid")
-
-	if !v.Valid() {
+	v.Check(validator.In(mode, models.Softcore, models.Hardcore), "mode", "is invalid")
+	if !v.Valid() && v.Errors["class"] != "" {
 		class = ""
+	}
+	if !v.Valid() && v.Errors["mode"] != "" {
+		mode = ""
 	}
 
 	paginator := request.NewPaginator(size, page, sort, map[string]bool{
@@ -63,7 +71,15 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	submissions, total, err := h.repo.List(paginator.Limit(), paginator.Offset(), class, paginator.Sort())
+	submissions, total, err := h.repo.List(
+		repository.ListSubmissionsParams{
+			Limit:   paginator.Limit(),
+			Offset:  paginator.Offset(),
+			Class:   class,
+			Mode:    mode,
+			OrderBy: paginator.Sort(),
+		},
+	)
 	if err != nil {
 		response.InternalServerErrorResponse(w, r)
 		return

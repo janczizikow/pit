@@ -9,9 +9,17 @@ import (
 	"github.com/janczizikow/pit/internal/models"
 )
 
+type ListSubmissionsParams struct {
+	Limit   int
+	Offset  int
+	Class   string
+	Mode    string
+	OrderBy string
+}
+
 // SubmissionsRepository is the interface that a submissions repository should conform to.
 type SubmissionsRepository interface {
-	List(limit, offset int, class, orderBy string) ([]*models.Submission, int, error)
+	List(params ListSubmissionsParams) ([]*models.Submission, int, error)
 	Create(submission *models.Submission) (*models.Submission, error)
 }
 
@@ -24,15 +32,23 @@ func NewSubmissionsRepository(db *pgxpool.Pool) *submissionsRepository {
 	return &submissionsRepository{db: db}
 }
 
-func (r *submissionsRepository) List(limit, offset int, class, orderBy string) ([]*models.Submission, int, error) {
+func (r *submissionsRepository) List(params ListSubmissionsParams) ([]*models.Submission, int, error) {
 	count := 0
 	submissions := make([]*models.Submission, 0)
 	var query string
 	var where string
-	if class != "" {
-		where = "WHERE class = $3"
+	if params.Class != "" {
+		where = fmt.Sprintf("WHERE class = '%s'", params.Class)
 	}
-	if orderBy != "" {
+	if params.Mode != "" {
+		switch where {
+		case "":
+			where = fmt.Sprintf("WHERE mode = '%s'", params.Mode)
+		default:
+			where += fmt.Sprintf("AND mode = '%s'", params.Mode)
+		}
+	}
+	if params.OrderBy != "" {
 		query = fmt.Sprintf(`SELECT
 													COUNT(*) OVER(),
 													id,
@@ -52,7 +68,7 @@ func (r *submissionsRepository) List(limit, offset int, class, orderBy string) (
 														) sub
 												%s
 												ORDER BY %s
-												LIMIT $1 OFFSET $2;`, orderBy, where, orderBy)
+												LIMIT $1 OFFSET $2;`, params.OrderBy, where, params.OrderBy)
 	} else {
 		query = fmt.Sprintf(`SELECT COUNT(*) OVER(),
 							id,
@@ -76,11 +92,7 @@ func (r *submissionsRepository) List(limit, offset int, class, orderBy string) (
 	}
 	var rows pgx.Rows
 	var err error
-	if class != "" {
-		rows, err = r.db.Query(context.Background(), query, limit, offset, class)
-	} else {
-		rows, err = r.db.Query(context.Background(), query, limit, offset)
-	}
+	rows, err = r.db.Query(context.Background(), query, params.Limit, params.Offset)
 	if err != nil {
 		return nil, 0, err
 	}
