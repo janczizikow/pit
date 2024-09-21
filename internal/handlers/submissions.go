@@ -52,19 +52,15 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 
 	v := validator.New()
 	v.Check(validator.In(class, "", models.Barbarian, models.Druid, models.Necromancer, models.Rogue, models.Sorcerer), "class", "is invalid")
-	v.Check(validator.In(mode, models.Softcore, models.Hardcore), "mode", "is invalid")
-	if !v.Valid() && v.Errors["class"] != "" {
-		class = ""
-	}
-	if !v.Valid() && v.Errors["mode"] != "" {
-		mode = ""
-	}
+	v.Check(validator.In(mode, "", models.Softcore, models.Hardcore), "mode", "is invalid")
 
 	paginator := request.NewPaginator(size, page, sort, map[string]bool{
-		"duration":  true,
-		"tier":      true,
-		"-duration": true,
-		"-tier":     true,
+		"created_at":  true,
+		"duration":    true,
+		"tier":        true,
+		"-created_at": true,
+		"-duration":   true,
+		"-tier":       true,
 	})
 	if ok, errs := paginator.Valid(); !ok {
 		response.FailedValidationResponse(w, r, errs)
@@ -73,11 +69,11 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 
 	submissions, total, err := h.repo.List(
 		repository.ListSubmissionsParams{
-			Limit:   paginator.Limit(),
-			Offset:  paginator.Offset(),
 			Class:   class,
 			Mode:    mode,
 			OrderBy: paginator.Sort(),
+			Limit:   paginator.Limit(),
+			Offset:  paginator.Offset(),
 		},
 	)
 	if err != nil {

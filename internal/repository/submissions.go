@@ -10,11 +10,11 @@ import (
 )
 
 type ListSubmissionsParams struct {
-	Limit   int
-	Offset  int
 	Class   string
 	Mode    string
 	OrderBy string
+	Limit   int
+	Offset  int
 }
 
 // SubmissionsRepository is the interface that a submissions repository should conform to.
@@ -36,18 +36,6 @@ func (r *submissionsRepository) List(params ListSubmissionsParams) ([]*models.Su
 	count := 0
 	submissions := make([]*models.Submission, 0)
 	var query string
-	var where string
-	if params.Class != "" {
-		where = fmt.Sprintf("WHERE class = '%s'", params.Class)
-	}
-	if params.Mode != "" {
-		switch where {
-		case "":
-			where = fmt.Sprintf("WHERE mode = '%s'", params.Mode)
-		default:
-			where += fmt.Sprintf("AND mode = '%s'", params.Mode)
-		}
-	}
 	if params.OrderBy != "" {
 		query = fmt.Sprintf(`SELECT
 													COUNT(*) OVER(),
@@ -66,11 +54,12 @@ func (r *submissionsRepository) List(params ListSubmissionsParams) ([]*models.Su
 															FROM submissions
 															ORDER BY name ASC, class ASC, %s
 														) sub
-												%s
+												WHERE ($1 = '' OR class = $1::class)
+												AND ($2 = '' OR mode = $2::mode)
 												ORDER BY %s
-												LIMIT $1 OFFSET $2;`, params.OrderBy, where, params.OrderBy)
+												LIMIT $3 OFFSET $4;`, params.OrderBy, params.OrderBy)
 	} else {
-		query = fmt.Sprintf(`SELECT COUNT(*) OVER(),
+		query = `SELECT COUNT(*) OVER(),
 							id,
 							"name",
 							class,
@@ -86,13 +75,14 @@ func (r *submissionsRepository) List(params ListSubmissionsParams) ([]*models.Su
 									FROM submissions
 									ORDER BY name ASC, class ASC, tier DESC, duration ASC
 								) sub
-						%s
+						WHERE ($1 = '' OR class = $1::class)
+						AND ($2 = '' OR mode = $2::mode)
 						ORDER BY id DESC
-						LIMIT $1 OFFSET $2;`, where)
+						LIMIT $3 OFFSET $4;`
 	}
 	var rows pgx.Rows
 	var err error
-	rows, err = r.db.Query(context.Background(), query, params.Limit, params.Offset)
+	rows, err = r.db.Query(context.Background(), query, params.Class, params.Mode, params.Limit, params.Offset)
 	if err != nil {
 		return nil, 0, err
 	}
