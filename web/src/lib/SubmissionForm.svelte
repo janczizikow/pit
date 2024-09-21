@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Button from './Button.svelte';
-	import Input from './Input.svelte';
-	import Select from './Select.svelte';
-	import type { NewSubmission } from './types';
+	import Button from '$lib/Button.svelte';
+	import Input from '$lib/Input.svelte';
+	import Select from '$lib/Select.svelte';
+	import type { NewSubmission } from '$lib/types';
 
 	export let onSubmit: (data: NewSubmission) => void;
 	let form: NewSubmission;

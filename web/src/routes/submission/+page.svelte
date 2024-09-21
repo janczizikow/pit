@@ -2,6 +2,18 @@
 	import Heading from '$lib/Heading.svelte';
 	import Text from '$lib/Text.svelte';
 	import SubmissionForm from '$lib/SubmissionForm.svelte';
+	import type { NewSubmission } from '$lib/types';
+
+	const handleSubmit = async (data: NewSubmission) => {
+		try {
+			const res = await fetch('/api/v1/submissions', {
+				method: 'POST',
+				body: JSON.stringify(data)
+			});
+			const json = await res.json();
+			console.log(json);
+		} catch {}
+	};
 </script>
 
 <svelte:head>
@@ -12,4 +24,4 @@
 	Submit a video as proof of a successful pit run. The video will be verified and added to the
 	leaderboard.
 </Text>
-<SubmissionForm />
+<SubmissionForm onSubmit={handleSubmit} />

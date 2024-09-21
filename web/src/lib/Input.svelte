@@ -28,14 +28,23 @@
 		box-shadow:
 			rgba(0, 0, 0, 0.016) 0px 2px 2px 0px,
 			rgba(0, 0, 0, 0.008) 0px 0px 0px 1px;
+	}
 
-		&:focus {
-			border-color: #7abfff;
-			border-color: #148eff;
-		}
+	input:hover {
+		border-color: #7abfff;
+		background-color: #171920;
+	}
 
-		&::placeholder {
-			color: grey;
-		}
+	input::focus {
+		border-color: #148eff;
+		background-color: #171920;
+	}
+
+	input:is(:-webkit-autofill, :autofill) {
+		border-color: #148eff;
+		background-color: #171920 !important;
+	}
+
+	input::placeholder {
 	}
 </style>
