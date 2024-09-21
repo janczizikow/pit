@@ -47,7 +47,7 @@ body {
   text-shadow: 3px 5px 5px rgba(0, 0, 0, 0.5);
   color: var(--text-default);
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url("leather-texture_800.webp");
+    url("/leather-texture_800.webp");
   background-repeat: repeat;
   background-color: #000000;
   text-rendering: optimizeLegibility;
