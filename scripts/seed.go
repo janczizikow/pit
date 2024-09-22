@@ -44,7 +44,7 @@ func main() {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	headers := []string{"name", "class", "tier", "mode", "build", "video", "duration", "verified", "created_at", "updated_at"}
+	headers := []string{"name", "class", "tier", "mode", "build", "video", "duration", "verified", "season_id", "created_at", "updated_at"}
 	writer.Write(headers)
 	data := [][]string{}
 	for _, v := range s {
@@ -87,6 +87,7 @@ func main() {
 			v.Video,
 			strconv.FormatInt(int64(duration.Seconds()), 10),
 			strconv.FormatBool(v.Verified == "y"),
+			"5",
 			created.Format(time.RFC3339),
 			created.Format(time.RFC3339),
 		})

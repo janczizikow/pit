@@ -8,6 +8,14 @@ import (
 	"github.com/janczizikow/pit/internal/models"
 )
 
+type ListSubmissionsParams struct {
+	Class   string
+	Mode    string
+	OrderBy string
+	Limit   int
+	Offset  int
+}
+
 // SeasonSubmissionsRepository is the interface that a season submissions repository should conform to.
 type SeasonSubmissionsRepository interface {
 	List(seasonId int, params ListSubmissionsParams) ([]*models.Submission, int, error)

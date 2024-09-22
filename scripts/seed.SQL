@@ -6,6 +6,6 @@ CSV HEADER DELIMITER ',';
 FROM 'seeds/season4.csv'
 WITH null as E'\'\'' CSV HEADER DELIMITER ',';
 
-\COPY submissions("name", class, tier, mode, build, video, duration, verified, created_at, updated_at)
+\COPY submissions("name", class, tier, mode, build, video, duration, verified, season_id, created_at, updated_at)
 FROM 'data.csv'
 WITH null as E'\'\'' CSV HEADER DELIMITER ',';
