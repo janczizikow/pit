@@ -17,7 +17,7 @@ type seasonsHandler struct {
 	repo repository.SeasonsRepository
 }
 
-func NewSeasonsHandler(repo repository.SeasonsRepository) *seasonsHandler {
+func NewSeasonsHandler(repo repository.SeasonsRepository) SeasonsHandler {
 	return &seasonsHandler{repo: repo}
 }
 

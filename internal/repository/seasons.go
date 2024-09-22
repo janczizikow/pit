@@ -17,7 +17,7 @@ type seasonsRepository struct {
 }
 
 // NewSeasonsRepository returns a new instance of a seasonsRepository.
-func NewSeasonsRepository(db *pgxpool.Pool) *seasonsRepository {
+func NewSeasonsRepository(db *pgxpool.Pool) SeasonsRepository {
 	return &seasonsRepository{db: db}
 }
 

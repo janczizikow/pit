@@ -31,6 +31,7 @@ type Submission struct {
 	Video    string `db:"video" json:"video"`
 	Duration int    `db:"duration" json:"duration"`
 	Verified bool   `db:"verified" json:"-"`
+	SeasonId *int   `db:"season_id" json:"-"`
 	// Timestamps
 
 	CreatedAt time.Time `db:"created_at" json:"created_at"`

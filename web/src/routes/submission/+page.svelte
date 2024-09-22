@@ -11,7 +11,7 @@
 	const handleSubmit = async (data: NewSubmission) => {
 		try {
 			error.set(null);
-			const res = await fetch('/api/v1/submissions', {
+			const res = await fetch('/api/v1/seasons/5/submissions', {
 				method: 'POST',
 				body: JSON.stringify(data)
 			});
