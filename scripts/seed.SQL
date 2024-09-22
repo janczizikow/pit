@@ -2,7 +2,7 @@
 FROM 'seeds/seasons.csv'
 CSV HEADER DELIMITER ',';
 
-\COPY submissions("name", class, tier, mode, video, duration, verified, season_id)
+\COPY submissions("name", class, tier, mode, video, build, duration, verified, season_id)
 FROM 'seeds/season4.csv'
 WITH null as E'\'\'' CSV HEADER DELIMITER ',';
 
