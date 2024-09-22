@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/janczizikow/pit/internal/models"
 )
@@ -82,9 +81,7 @@ func (r *submissionsRepository) List(params ListSubmissionsParams) ([]*models.Su
 						ORDER BY id DESC
 						LIMIT $3 OFFSET $4;`
 	}
-	var rows pgx.Rows
-	var err error
-	rows, err = r.db.Query(context.Background(), query, params.Class, params.Mode, params.Limit, params.Offset)
+	rows, err := r.db.Query(context.Background(), query, params.Class, params.Mode, params.Limit, params.Offset)
 	if err != nil {
 		return nil, 0, err
 	}

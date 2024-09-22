@@ -17,6 +17,7 @@ func Router(s *Server) http.Handler {
 	})
 
 	repo := repository.New(s.db)
+	seasonsHandler := handlers.NewSeasonsHandler(repo.Seasons)
 	submissionsHandler := handlers.NewSubmissionsHandler(repo.Submissions)
 
 	path := os.Getenv("WEB_ROOT")
@@ -24,6 +25,7 @@ func Router(s *Server) http.Handler {
 	static := http.FileServer(http.Dir(path))
 	mux.Handle("/", static)
 	mux.Handle("/submission", static)
+	mux.HandleFunc("GET /api/v1/seasons", sentryHandler.HandleFunc(seasonsHandler.ListSeasons))
 	mux.HandleFunc("GET /api/v1/submissions", sentryHandler.HandleFunc(submissionsHandler.ListSubmissions))
 	mux.HandleFunc("POST /api/v1/submissions", sentryHandler.HandleFunc(submissionsHandler.CreateSubmission))
 
