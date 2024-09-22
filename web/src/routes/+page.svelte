@@ -88,39 +88,41 @@
 		<video autoplay loop muted playsinline>
 			<source src={video} type="video/webm" />
 		</video>
-		<Heading>Solo Pit Ladder</Heading>
-		<Text>
-			Best community seasonal pit leaderboard. Rankings are determined by the highest tier level
-			achieved and the lowest completion time.
-		</Text>
-		<div class="flex">
-			<HardcoreButton selected={$query.mode === 'hardcore'} {onToggleHC} />
-			<div class="flex classes">
-				<ClassButton
-					type="barbarian"
-					selected={$query.class === 'barbarian'}
-					onSelectClass={onChangeClass}
-				/>
-				<ClassButton
-					type="druid"
-					selected={$query.class === 'druid'}
-					onSelectClass={onChangeClass}
-				/>
-				<ClassButton
-					type="necromancer"
-					selected={$query.class === 'necromancer'}
-					onSelectClass={onChangeClass}
-				/>
-				<ClassButton
-					type="rogue"
-					selected={$query.class === 'rogue'}
-					onSelectClass={onChangeClass}
-				/>
-				<ClassButton
-					type="sorcerer"
-					selected={$query.class === 'sorcerer'}
-					onSelectClass={onChangeClass}
-				/>
+		<div class="container">
+			<Heading>Solo Pit Ladder</Heading>
+			<Text>
+				Best community seasonal pit leaderboard. Rankings are determined by the highest tier level
+				achieved and the lowest completion time.
+			</Text>
+			<div class="flex">
+				<HardcoreButton selected={$query.mode === 'hardcore'} {onToggleHC} />
+				<div class="flex wrap classes">
+					<ClassButton
+						type="barbarian"
+						selected={$query.class === 'barbarian'}
+						onSelectClass={onChangeClass}
+					/>
+					<ClassButton
+						type="druid"
+						selected={$query.class === 'druid'}
+						onSelectClass={onChangeClass}
+					/>
+					<ClassButton
+						type="necromancer"
+						selected={$query.class === 'necromancer'}
+						onSelectClass={onChangeClass}
+					/>
+					<ClassButton
+						type="rogue"
+						selected={$query.class === 'rogue'}
+						onSelectClass={onChangeClass}
+					/>
+					<ClassButton
+						type="sorcerer"
+						selected={$query.class === 'sorcerer'}
+						onSelectClass={onChangeClass}
+					/>
+				</div>
 			</div>
 		</div>
 		<Pagination metadata={$data.metadata} {onChangePage} />
@@ -130,6 +132,12 @@
 </div>
 
 <style>
+	.container {
+		padding: 0 16px;
+		margin: 0 auto;
+		width: 100%;
+		max-width: var(--container-width);
+	}
 	.video-container {
 		position: relative;
 		width: calc(-16px + 100vw);
@@ -149,6 +157,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.wrap {
+		flex-wrap: wrap;
 	}
 
 	.classes {

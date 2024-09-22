@@ -30,19 +30,21 @@
 <svelte:head>
 	<title>Diablo 4 Pit - Submission</title>
 </svelte:head>
-<Heading>Submission</Heading>
-<Text>
-	Submit a video as proof of a successful pit run. The video will be verified and added to the
-	leaderboard.
-</Text>
 <div class="container">
+	<Heading>Submission</Heading>
+	<Text>
+		Submit a video as proof of a successful pit run. The video will be verified and added to the
+		leaderboard.
+	</Text>
 	<ErrorMessage error={$error} />
+	<SubmissionForm onSubmit={handleSubmit} />
 </div>
-<SubmissionForm onSubmit={handleSubmit} />
 
 <style>
 	.container {
+		padding: 0 16px;
 		margin: 0 auto;
+		width: 100%;
 		max-width: var(--container-width);
 	}
 </style>

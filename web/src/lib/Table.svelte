@@ -20,62 +20,70 @@
 	}
 </script>
 
-<table>
-	<thead>
-		<tr>
-			<th class="rank">
-				<span>Rank</span>
-			</th>
-			<th class="player">
-				<span>Player</span>
-			</th>
-			<th class="class">
-				<span>Class</span>
-			</th>
-			<th class="tier">
-				<span>Tier</span>
-			</th>
-			<th class="time">
-				<span>Time</span>
-			</th>
-			<th class="link-column">
-				<span>Video</span>
-			</th>
-			<th class="link-column">
-				<span>Build</span>
-			</th>
-			<th>
-				<span>Date</span>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		{#each data as submission, i}
+<div class="wrapper">
+	<table>
+		<thead>
 			<tr>
-				<td class="rank">{i + 1 + skip}</td>
-				<td class="player" title={submission.name}>{submission.name}</td>
-				<td class="class">{submission.class}</td>
-				<td class="tier">{submission.tier}</td>
-				<td class="time">{formatSeconds(submission.duration)}</td>
-				<td class="link-column">
-					<a href={formatLink(submission.video)} target="_blank" rel="noopener noreferrer">Video</a>
-				</td>
-				<td class="link-column">
-					{#if submission.build}
-						<a href={formatLink(submission.build)} target="_blank" rel="noopener noreferrer"
-							>Build</a
-						>
-					{:else}
-						-
-					{/if}
-				</td>
-				<td>{formatDate(submission.created_at)}</td>
+				<th class="rank">
+					<span>Rank</span>
+				</th>
+				<th class="player">
+					<span>Player</span>
+				</th>
+				<th class="class">
+					<span>Class</span>
+				</th>
+				<th class="tier">
+					<span>Tier</span>
+				</th>
+				<th class="time">
+					<span>Time</span>
+				</th>
+				<th class="link-column">
+					<span>Video</span>
+				</th>
+				<th class="link-column">
+					<span>Build</span>
+				</th>
+				<th>
+					<span>Date</span>
+				</th>
 			</tr>
-		{/each}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			{#each data as submission, i}
+				<tr>
+					<td class="rank">{i + 1 + skip}</td>
+					<td class="player" title={submission.name}>{submission.name}</td>
+					<td class="class">{submission.class}</td>
+					<td class="tier">{submission.tier}</td>
+					<td class="time">{formatSeconds(submission.duration)}</td>
+					<td class="link-column">
+						<a href={formatLink(submission.video)} target="_blank" rel="noopener noreferrer"
+							>Video</a
+						>
+					</td>
+					<td class="link-column">
+						{#if submission.build}
+							<a href={formatLink(submission.build)} target="_blank" rel="noopener noreferrer"
+								>Build</a
+							>
+						{:else}
+							-
+						{/if}
+					</td>
+					<td>{formatDate(submission.created_at)}</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
 
 <style>
+	.wrapper {
+		overflow-x: auto;
+	}
+
 	table {
 		margin: 0 auto;
 		max-width: 720px;
