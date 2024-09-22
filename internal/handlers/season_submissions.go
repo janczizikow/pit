@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/janczizikow/pit/internal/http/request"
 	"github.com/janczizikow/pit/internal/http/response"
@@ -10,20 +12,27 @@ import (
 	"github.com/janczizikow/pit/internal/validator"
 )
 
-type SubmissionsHandler interface {
+type SeasonSubmissionsHandler interface {
 	ListSubmissions(w http.ResponseWriter, r *http.Request)
 	CreateSubmission(w http.ResponseWriter, r *http.Request)
 }
 
-type submissionsHandler struct {
-	repo repository.SubmissionsRepository
+type seasonSubmissionsHandler struct {
+	repo repository.SeasonSubmissionsRepository
 }
 
-func NewSubmissionsHandler(repo repository.SubmissionsRepository) SubmissionsHandler {
-	return &submissionsHandler{repo: repo}
+func NewSeasonSubmissionsHandler(repo repository.SeasonSubmissionsRepository) SeasonSubmissionsHandler {
+	return &seasonSubmissionsHandler{repo: repo}
 }
 
-func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Request) {
+func (h *seasonSubmissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	seasonId, err := strconv.Atoi(id)
+	if err != nil || seasonId < 1 {
+		response.NotFoundResponse(w, r)
+		return
+	}
+
 	page, err := request.QueryInt(r, "page", 1)
 	if err != nil {
 		response.BadRequestResponse(w, r, err)
@@ -62,6 +71,7 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 		"-duration":   true,
 		"-tier":       true,
 	})
+
 	if ok, errs := paginator.Valid(); !ok {
 		response.FailedValidationResponse(w, r, errs)
 		return
@@ -87,9 +97,16 @@ func (h *submissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Requ
 	})
 }
 
-func (h *submissionsHandler) CreateSubmission(w http.ResponseWriter, r *http.Request) {
+func (h *seasonSubmissionsHandler) CreateSubmission(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	seasonId, err := strconv.Atoi(id)
+	if err != nil || seasonId < 1 {
+		response.NotFoundResponse(w, r)
+		return
+	}
+
 	submission := &models.Submission{}
-	err := request.ReadJSON(w, r, submission)
+	err = request.ReadJSON(w, r, submission)
 	if err != nil {
 		response.BadRequestResponse(w, r, err)
 		return
@@ -101,10 +118,13 @@ func (h *submissionsHandler) CreateSubmission(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	submission.SeasonId = &seasonId
 	created, err := h.repo.Create(submission)
 	if err != nil {
+		fmt.Println(err)
 		response.InternalServerErrorResponse(w, r)
 		return
 	}
+
 	response.WriteJSON(w, http.StatusCreated, created)
 }

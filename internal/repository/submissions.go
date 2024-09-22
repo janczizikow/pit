@@ -27,7 +27,7 @@ type submissionsRepository struct {
 }
 
 // NewSubmissionsRepository returns a new instance of a submissions repository.
-func NewSubmissionsRepository(db *pgxpool.Pool) *submissionsRepository {
+func NewSubmissionsRepository(db *pgxpool.Pool) SubmissionsRepository {
 	return &submissionsRepository{db: db}
 }
 
