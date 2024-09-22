@@ -8,6 +8,14 @@ import (
 	"github.com/janczizikow/pit/internal/models"
 )
 
+type ListSubmissionsParams struct {
+	Class   string
+	Mode    string
+	OrderBy string
+	Limit   int
+	Offset  int
+}
+
 // SeasonSubmissionsRepository is the interface that a season submissions repository should conform to.
 type SeasonSubmissionsRepository interface {
 	List(seasonId int, params ListSubmissionsParams) ([]*models.Submission, int, error)
@@ -43,6 +51,7 @@ func (r *seasonSubmissionsRepository) List(seasonId int, params ListSubmissionsP
 														FROM (
 															SELECT DISTINCT ON (name, class) *
 															FROM submissions
+															WHERE season_id = $1
 															ORDER BY name ASC, class ASC, %s
 														) sub
 												WHERE verified = true
@@ -66,6 +75,7 @@ func (r *seasonSubmissionsRepository) List(seasonId int, params ListSubmissionsP
 								FROM (
 									SELECT DISTINCT ON (name, class) *
 									FROM submissions
+									WHERE season_id = $1
 									ORDER BY name ASC, class ASC, tier DESC, duration ASC
 								) sub
 						WHERE verified = true
