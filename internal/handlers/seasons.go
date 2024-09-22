@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/janczizikow/pit/internal/http/request"
@@ -25,7 +24,6 @@ func (h *seasonsHandler) ListSeasons(w http.ResponseWriter, r *http.Request) {
 	paginator := request.NewPaginator(100, 1, make([]string, 0), make(map[string]bool))
 	seasons, total, err := h.repo.List()
 	if err != nil {
-		fmt.Println(err)
 		response.InternalServerErrorResponse(w, r)
 		return
 	}

@@ -13,7 +13,8 @@
 	const { listSubmissions, data, query } = createSubmissionsStore({
 		page: 1,
 		mode: 'softcore',
-		class: ''
+		class: '',
+		season: 5
 	});
 	const onChangeClass = async (cls: string) => {
 		const link = new URL($page.url);
@@ -58,24 +59,43 @@
 			behavior: 'smooth'
 		});
 	};
+	const onChangeSeason = async (s: string) => {
+		const url = new URL($page.url);
+		url.searchParams.delete('page');
+		url.searchParams.set('season', s);
+		await goto(url, { noScroll: true });
+		window.scrollTo({
+			top: 200,
+			left: 0,
+			behavior: 'smooth'
+		});
+	};
+
+	const getInt = (str: string, fallback: number): number => {
+		let res = parseInt(str);
+		if (res <= 0 || isNaN(res) || !Number.isFinite(res)) {
+			res = fallback;
+		}
+		return res;
+	};
 
 	afterNavigate(() => {
 		const p = $page.url.searchParams.get('page') || '1';
 		const classQuery = $page.url.searchParams.get('class') || '';
 		const mode = $page.url.searchParams.get('mode') || 'softcore';
-		let page = parseInt(p);
-		if (page <= 0 || isNaN(page) || !Number.isFinite(page)) {
-			page = 1;
-		}
+		const s = $page.url.searchParams.get('season') || '5';
+
 		query.set({
-			page,
+			page: getInt(p, 1),
 			class: classQuery,
-			mode
+			mode,
+			season: getInt(s, 5)
 		});
 		listSubmissions({
-			page,
+			page: getInt(p, 1),
 			classQuery,
-			mode
+			mode,
+			season: getInt(s, 5)
 		});
 	});
 </script>
@@ -94,6 +114,18 @@
 				Best community seasonal pit leaderboard. Rankings are determined by the highest tier level
 				achieved and the lowest completion time.
 			</Text>
+			<select
+				name="season"
+				class="season-selector"
+				value={`${$query.season}`}
+				on:change={(e) => {
+					onChangeSeason(e.currentTarget.value);
+				}}
+			>
+				<option value="4" selected={$query.season === 4}>Season 4</option>
+				<option value="5" selected={$query.season === 5}>Season 5</option>
+				<option value="6" disabled>Season 6</option>
+			</select>
 			<div class="flex">
 				<HardcoreButton selected={$query.mode === 'hardcore'} {onToggleHC} />
 				<div class="flex wrap classes">
@@ -161,6 +193,11 @@
 
 	.wrap {
 		flex-wrap: wrap;
+	}
+
+	.season-selector {
+		margin: 0 auto 24px auto;
+		max-width: 120px;
 	}
 
 	.classes {

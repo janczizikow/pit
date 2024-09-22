@@ -3,7 +3,7 @@ import { derived, writable } from 'svelte/store';
 
 export const PAGE_SIZE = 50;
 
-type SubmissionsQuery = { page: number; class: string; mode: string };
+type SubmissionsQuery = { page: number; class: string; mode: string; season: number };
 
 export function createSubmissionsStore(initialQuery: SubmissionsQuery) {
 	const isFetching = writable(false);
@@ -11,10 +11,12 @@ export function createSubmissionsStore(initialQuery: SubmissionsQuery) {
 	const data = writable<SubmissionsResponse>({ data: [], metadata: {} });
 
 	const listSubmissions = async ({
+		season,
 		page,
 		classQuery,
 		mode
 	}: {
+		season: string | number;
 		page: string | number;
 		classQuery: string;
 		mode: string;
@@ -22,7 +24,7 @@ export function createSubmissionsStore(initialQuery: SubmissionsQuery) {
 		try {
 			isFetching.set(true);
 			const res = await fetch(
-				`/api/v1/submissions?page=${page}&size=${PAGE_SIZE}&class=${classQuery}&mode=${mode}&sort=-tier,duration`
+				`/api/v1/seasons/${season}/submissions?page=${page}&size=${PAGE_SIZE}&class=${classQuery}&mode=${mode}&sort=-tier,duration`
 			);
 			const json = await res.json();
 			if (res.status >= 300) {
