@@ -158,7 +158,11 @@
 			</div>
 		</div>
 		<Pagination metadata={$data.metadata} {onChangePage} />
-		<Table data={$data.data} skip={($query.page - 1) * PAGE_SIZE} />
+		<Table
+			data={$data.data}
+			skip={($query.page - 1) * PAGE_SIZE}
+			buildAsText={$query.season == 4}
+		/>
 		<Pagination metadata={$data.metadata} {onChangePage} />
 	</div>
 </div>

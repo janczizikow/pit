@@ -2,6 +2,7 @@
 	import type { Submission } from '$lib/types';
 	export let data: Submission[];
 	export let skip: number;
+	export let buildAsText: boolean;
 
 	function formatSeconds(seconds: number) {
 		const minutes = Math.floor(seconds / 60);
@@ -65,9 +66,13 @@
 					</td>
 					<td class="link-column">
 						{#if submission.build}
-							<a href={formatLink(submission.build)} target="_blank" rel="noopener noreferrer"
-								>Build</a
-							>
+							{#if buildAsText}
+								{submission.build}
+							{:else}
+								<a href={formatLink(submission.build)} target="_blank" rel="noopener noreferrer"
+									>Build</a
+								>
+							{/if}
 						{:else}
 							-
 						{/if}
