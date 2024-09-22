@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -28,7 +27,7 @@ func NewSeasonSubmissionsHandler(repo repository.SeasonSubmissionsRepository) Se
 func (h *seasonSubmissionsHandler) ListSubmissions(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	seasonId, err := strconv.Atoi(id)
-	if err != nil || seasonId < 1 {
+	if err != nil || seasonId < 0 {
 		response.NotFoundResponse(w, r)
 		return
 	}
@@ -78,6 +77,7 @@ func (h *seasonSubmissionsHandler) ListSubmissions(w http.ResponseWriter, r *htt
 	}
 
 	submissions, total, err := h.repo.List(
+		seasonId,
 		repository.ListSubmissionsParams{
 			Class:   class,
 			Mode:    mode,
@@ -100,7 +100,7 @@ func (h *seasonSubmissionsHandler) ListSubmissions(w http.ResponseWriter, r *htt
 func (h *seasonSubmissionsHandler) CreateSubmission(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	seasonId, err := strconv.Atoi(id)
-	if err != nil || seasonId < 1 {
+	if err != nil || seasonId < 0 {
 		response.NotFoundResponse(w, r)
 		return
 	}
@@ -121,7 +121,6 @@ func (h *seasonSubmissionsHandler) CreateSubmission(w http.ResponseWriter, r *ht
 	submission.SeasonId = &seasonId
 	created, err := h.repo.Create(submission)
 	if err != nil {
-		fmt.Println(err)
 		response.InternalServerErrorResponse(w, r)
 		return
 	}

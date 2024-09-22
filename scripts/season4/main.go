@@ -18,6 +18,7 @@ type SubmissionParsed struct {
 	Class    string `json:"Class"`
 	Mode     string `json:"Mode"`
 	Video    string `json:"Video"`
+	Build    string `json:"Build"`
 }
 type SubmissionsParsed []*SubmissionParsed
 
@@ -42,7 +43,7 @@ func main() {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	headers := []string{"name", "class", "tier", "mode", "video", "duration", "verified", "season_id"}
+	headers := []string{"name", "class", "tier", "mode", "video", "build", "duration", "verified", "season_id"}
 	writer.Write(headers)
 	data := [][]string{}
 	for _, v := range s {
@@ -50,9 +51,10 @@ func main() {
 		if v.Mode == "HC" {
 			mode = "hardcore"
 		}
+		dur := strings.TrimSpace(strings.ReplaceAll(v.Duration, ":00", ""))
 		duration, err := time.ParseDuration(
 			fmt.Sprintf("%ss",
-				strings.ReplaceAll(strings.TrimSpace(v.Duration), ":", "m"),
+				strings.ReplaceAll(dur, ":", "m"),
 			),
 		)
 		if err != nil {
@@ -64,6 +66,7 @@ func main() {
 			strconv.FormatInt(int64(v.Tier), 10),
 			mode,
 			v.Video,
+			strings.TrimSpace(v.Build),
 			strconv.FormatInt(int64(duration.Seconds()), 10),
 			strconv.FormatBool(true),
 			"4",
