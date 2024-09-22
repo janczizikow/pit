@@ -51,6 +51,7 @@ func (r *seasonSubmissionsRepository) List(seasonId int, params ListSubmissionsP
 														FROM (
 															SELECT DISTINCT ON (name, class) *
 															FROM submissions
+															WHERE season_id = $1
 															ORDER BY name ASC, class ASC, %s
 														) sub
 												WHERE verified = true
@@ -74,6 +75,7 @@ func (r *seasonSubmissionsRepository) List(seasonId int, params ListSubmissionsP
 								FROM (
 									SELECT DISTINCT ON (name, class) *
 									FROM submissions
+									WHERE season_id = $1
 									ORDER BY name ASC, class ASC, tier DESC, duration ASC
 								) sub
 						WHERE verified = true
