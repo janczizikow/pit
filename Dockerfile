@@ -12,6 +12,9 @@ RUN yarn --frozen-lockfile
 
 COPY web/ .
 
+# Preload data for homepage
+RUN curl https://diablo4pit.web.app/api/v1/seasons/5/submissions\?page\=1\&size\=50\&class\=\&mode\=softcore\&sort\=-tier,duration -o ./src/lib/assets/preloaded.json
+
 # Build
 RUN yarn build
 

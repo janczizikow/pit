@@ -29,6 +29,10 @@
 
 <svelte:head>
 	<title>Diablo 4 Pit - Submission</title>
+	<meta
+		name="description"
+		content="unofficial Diablo 4 Seasonal Pit Leaderboard. Submit your pit run and see how you rank!"
+	/>
 </svelte:head>
 <div class="container">
 	<Heading>Submission</Heading>

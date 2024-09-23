@@ -1,5 +1,6 @@
 import type { SubmissionsResponse } from './types';
 import { derived, writable } from 'svelte/store';
+import preloaded from '$lib/assets/preloaded.json';
 
 export const PAGE_SIZE = 50;
 
@@ -8,7 +9,7 @@ type SubmissionsQuery = { page: number; class: string; mode: string; season: num
 export function createSubmissionsStore(initialQuery: SubmissionsQuery) {
 	const isFetching = writable(false);
 	const query = writable(initialQuery);
-	const data = writable<SubmissionsResponse>({ data: [], metadata: {} });
+	const data = writable<SubmissionsResponse>(preloaded);
 
 	const listSubmissions = async ({
 		season,

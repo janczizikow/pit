@@ -102,6 +102,7 @@
 
 <svelte:head>
 	<title>Diablo 4 Pit - Leaderboard</title>
+	<meta name="description" content="unofficial Diablo 4 Seasonal Pit Leaderboard." />
 </svelte:head>
 <div>
 	<div class="video-container">
