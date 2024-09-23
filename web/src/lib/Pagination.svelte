@@ -9,7 +9,7 @@
 <div class="pagination">
 	<DiabloButton
 		type="primary"
-		disabled={metadata?.current_page === 1}
+		disabled={metadata?.current_page === 1 || !metadata.current_page}
 		onClick={() => {
 			if (metadata?.current_page) {
 				onChangePage(metadata.current_page - 1);

@@ -4,18 +4,34 @@
 	import ClassButton from '$lib/ClassButton.svelte';
 	import Table from '$lib/Table.svelte';
 	import video from '$lib/assets/hero.webm';
-	import { createSubmissionsStore, PAGE_SIZE } from '$lib/store';
 	import Pagination from '$lib/Pagination.svelte';
 	import Heading from '$lib/Heading.svelte';
 	import HardcoreButton from '$lib/HardcoreButton.svelte';
 	import Text from '$lib/Text.svelte';
+	import { createQuery } from '@tanstack/svelte-query';
+	import { listSubmissions, PAGE_SIZE } from '$lib/api';
+	import { writable } from 'svelte/store';
+	import type { SubmissionsResponse } from '$lib/types';
+	import preloaded from '$lib/assets/preloaded.json';
 
-	const { listSubmissions, data, query } = createSubmissionsStore({
+	const query = writable({
 		page: 1,
 		mode: 'softcore',
 		class: '',
 		season: 5
 	});
+
+	let prevData: SubmissionsResponse = preloaded;
+	$: queryResult = createQuery({
+		queryKey: ['submissions', { ...$query }],
+		queryFn: () => listSubmissions($query),
+		staleTime: 60 * 1000 // 1min
+		// https://github.com/TanStack/query/issues/5913
+		// placeholderData: keepPreviousData,
+	});
+	$: if ($queryResult?.isSuccess) {
+		prevData = $queryResult.data;
+	}
 	const onChangeClass = async (cls: string) => {
 		const link = new URL($page.url);
 		if ($query.class === cls) {
@@ -91,12 +107,6 @@
 			mode,
 			season: getInt(s, 5)
 		});
-		listSubmissions({
-			page: getInt(p, 1),
-			classQuery,
-			mode,
-			season: getInt(s, 5)
-		});
 	});
 </script>
 
@@ -158,13 +168,13 @@
 				</div>
 			</div>
 		</div>
-		<Pagination metadata={$data.metadata} {onChangePage} />
+		<Pagination metadata={$queryResult.data?.metadata || prevData.metadata} {onChangePage} />
 		<Table
-			data={$data.data}
+			data={$queryResult.data?.data || prevData.data}
 			skip={($query.page - 1) * PAGE_SIZE}
 			buildAsText={$query.season == 4}
 		/>
-		<Pagination metadata={$data.metadata} {onChangePage} />
+		<Pagination metadata={$queryResult.data?.metadata || prevData.metadata} {onChangePage} />
 	</div>
 </div>
 
