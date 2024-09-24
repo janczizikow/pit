@@ -13,7 +13,7 @@ RUN yarn --frozen-lockfile
 COPY web/ .
 
 # Preload data for homepage
-# RUN curl https://diablo4pit.web.app/api/v1/seasons/5/submissions\?page\=1\&size\=50\&class\=\&mode\=softcore\&sort\=-tier,duration -o ./src/lib/assets/preloaded.json
+RUN curl https://pit-796768497423.europe-west3.run.app/api/v1/seasons/5/submissions\?page\=1\&size\=50\&class\=\&mode\=softcore\&sort\=-tier,duration -o ./src/lib/assets/preloaded.json
 
 # Build
 RUN yarn build
@@ -29,17 +29,16 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-# COPY --from=frontend /web/build ./usr/local/bin/web/build/
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o=/bin/api ./cmd/api
 
-FROM scratch
+FROM nginx:1.26.2-alpine-slim
 WORKDIR /app
 COPY --from=frontend /web/build /var/www/
 COPY --from=api /bin/api /bin/api
-# COPY --from=api /api/scripts/run.sh ./run.sh
-# COPY --from=api /api/nginx.conf ./run.sh
+COPY ./scripts/run.sh /run.sh
+COPY ./nginx.conf ./nginx.conf
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -48,4 +47,4 @@ COPY --from=api /bin/api /bin/api
 # https://docs.docker.com/reference/dockerfile/#expose
 EXPOSE 8080
 
-CMD ["/bin/api"]
+CMD ["/run.sh"]
