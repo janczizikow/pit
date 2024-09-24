@@ -2,28 +2,9 @@
 	export let type: string;
 	export let selected: boolean;
 	export let onSelectClass: (cls: string) => void;
-
-	const src = `/classes/base/${type.toUpperCase()}.webp`;
-	const hoveredSRC = `/classes/hover/${type.toUpperCase()}.webp`;
-
-	let hovered = false;
-	function onHover() {
-		hovered = true;
-	}
-	function onBlur() {
-		hovered = false;
-	}
 </script>
 
-<button
-	on:mouseover={selected ? null : onHover}
-	on:focus={selected ? null : onHover}
-	on:mouseout={selected ? null : onBlur}
-	on:blur={selected ? null : onBlur}
-	on:click={() => onSelectClass(type)}
-	style="background-image: url({selected || hovered ? hoveredSRC : src})"
->
-	<img src={selected || hovered ? src : hoveredSRC} alt="" class="hidden" />
+<button class={selected ? `${type}-selected` : type} on:click={() => onSelectClass(type)}>
 	<span class="hidden">{type}</span></button
 >
 
@@ -46,5 +27,51 @@
 	.hidden {
 		display: none;
 		visibility: hidden;
+	}
+
+	.barbarian {
+		background-image: url('/classes/base/BARBARIAN.webp');
+	}
+	.barbarian-selected {
+		background-image: url('/classes/hover/BARBARIAN.webp');
+	}
+	.barbarian:hover {
+		background-image: url('/classes/hover/BARBARIAN.webp');
+	}
+	.druid {
+		background-image: url('/classes/base/DRUID.webp');
+	}
+	.druid-selected {
+		background-image: url('/classes/hover/DRUID.webp');
+	}
+	.druid:hover {
+		background-image: url('/classes/hover/DRUID.webp');
+	}
+	.necromancer {
+		background-image: url('/classes/base/NECROMANCER.webp');
+	}
+	.necromancer-selected {
+		background-image: url('/classes/hover/NECROMANCER.webp');
+	}
+	.necromancer:hover {
+		background-image: url('/classes/hover/NECROMANCER.webp');
+	}
+	.rogue {
+		background-image: url('/classes/base/ROGUE.webp');
+	}
+	.rogue-selected {
+		background-image: url('/classes/hover/ROGUE.webp');
+	}
+	.rogue:hover {
+		background-image: url('/classes/hover/ROGUE.webp');
+	}
+	.sorcerer {
+		background-image: url('/classes/base/SORCERER.webp');
+	}
+	.sorcerer-selected {
+		background-image: url('/classes/hover/SORCERER.webp');
+	}
+	.sorcerer:hover {
+		background-image: url('/classes/hover/SORCERER.webp');
 	}
 </style>

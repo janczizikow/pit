@@ -3,7 +3,6 @@
 	import { page } from '$app/stores';
 	import ClassButton from '$lib/ClassButton.svelte';
 	import Table from '$lib/Table.svelte';
-	import video from '$lib/assets/hero.webm';
 	import Pagination from '$lib/Pagination.svelte';
 	import Heading from '$lib/Heading.svelte';
 	import HardcoreButton from '$lib/HardcoreButton.svelte';
@@ -117,7 +116,10 @@
 <div>
 	<div class="video-container">
 		<video autoplay loop muted playsinline>
-			<source src={video} type="video/webm" />
+			<source
+				src="https://res.cloudinary.com/shanlongjj/video/upload/f_auto:video,q_auto/v1/pit/yvw0yowe66ytcnpjnsbh"
+				type="video/webm"
+			/>
 		</video>
 		<div class="container">
 			<Heading>Solo Pit Ladder</Heading>

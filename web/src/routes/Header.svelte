@@ -6,7 +6,7 @@
 
 <header>
 	<a href="/">
-		<img src={logo} alt="Diablo IV" />
+		<img src={logo} alt="Diablo IV" class="logo" />
 	</a>
 
 	{#if !$page.url.pathname.includes('/submission')}
@@ -37,6 +37,11 @@
 			backdrop-filter: blur(20px);
 			background: rgba(36, 37, 38, 0.8);
 		}
+	}
+
+	.logo {
+		width: 48px;
+		height: 48px;
 	}
 
 	.link {
