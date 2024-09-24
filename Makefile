@@ -23,17 +23,17 @@ build:
 ## migration name=$1: creates a new database migration
 .PHONY: migration
 migration:
-	migrate create -ext sql -dir ./internal/database/migrations $(name)
+	migrate create -ext sql -dir ./migrations $(name)
 
 ## migrate: applies all up database migrations
 .PHONY: migrate
 migrate:
-	migrate -path ./internal/database/migrations -database=$(DB_DSN) up
+	migrate -path ./migrations -database=$(DB_DSN) up
 
 ## rollback
 .PHONY: rollback
 rollback:
-	migrate -path ./internal/database/migrations -database=$(DB_DSN) down
+	migrate -path ./migrations -database=$(DB_DSN) down
 
 ## psql: connects to the database using psql
 .PHONY: psql
