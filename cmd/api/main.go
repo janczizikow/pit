@@ -37,9 +37,16 @@ func main() {
 		log.Info().Msg("SENTRY_DSN not set, skipping Sentry initialization")
 	}
 
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, DB_SSL_MODE)
+
+	log.Info().Msg("running migrations")
+	err := database.RunMigrations(dsn)
+	if err != nil {
+		log.Fatal().Err(err).Msg("migrations failed")
+	}
+
 	log.Info().Msg("connecting to postgres DB")
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DB_SSL_MODE)
 	db, err := database.Connect(dsn)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to connect to postgres DB")
