@@ -9,7 +9,7 @@ import (
 )
 
 func RunMigrations(dataSourceName string) error {
-	m, err := migrate.New("file://internal/database/migrations", dataSourceName)
+	m, err := migrate.New("file:///migrations", dataSourceName)
 	if err != nil {
 		return err
 	}

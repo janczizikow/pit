@@ -33,10 +33,10 @@ COPY . .
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o=/bin/api ./cmd/api
 
-FROM scratch
-WORKDIR /app
+FROM alpine
 COPY --from=frontend /web/build /bin/web/build
 COPY --from=api /bin/api /bin/api
+COPY --from=api api/migrations/ /migrations
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
