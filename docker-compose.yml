@@ -32,7 +32,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_SSL_MODE: ${DB_SSL_MODE}
       SENTRY_DSN: ${SENTRY_DSN}
-      WEB_ROOT: /var/www/
+      WEB_ROOT: /bin/web/build
 
 volumes:
   pg_data:

@@ -29,7 +29,8 @@ func main() {
 			Environment: "production",
 			// Set TracesSampleRate to 1.0 to capture 100% of transactions for tracing.
 			// We recommend adjusting this value in production,
-			TracesSampleRate: 1.0,
+			TracesSampleRate: 0.2,
+			EnableTracing:    true,
 		}); err != nil {
 			log.Error().Err(err).Msg("Sentry initialization failed")
 		}

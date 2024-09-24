@@ -33,12 +33,10 @@ COPY . .
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o=/bin/api ./cmd/api
 
-FROM nginx:1.26.2-alpine-slim
+FROM scratch
 WORKDIR /app
-COPY --from=frontend /web/build /var/www/
+COPY --from=frontend /web/build /bin/web/build
 COPY --from=api /bin/api /bin/api
-COPY ./scripts/run.sh /run.sh
-COPY ./nginx.conf ./nginx.conf
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -47,4 +45,4 @@ COPY ./nginx.conf ./nginx.conf
 # https://docs.docker.com/reference/dockerfile/#expose
 EXPOSE 8080
 
-CMD ["/run.sh"]
+CMD ["/bin/api"]
