@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # frontend
-FROM node:20.17 AS frontend
+FROM node:20.17-alpine AS frontend
 
 # Set destination for COPY
 WORKDIR /web
@@ -13,34 +13,32 @@ RUN yarn --frozen-lockfile
 COPY web/ .
 
 # Preload data for homepage
-RUN curl https://diablo4pit.web.app/api/v1/seasons/5/submissions\?page\=1\&size\=50\&class\=\&mode\=softcore\&sort\=-tier,duration -o ./src/lib/assets/preloaded.json
+RUN curl https://pit-796768497423.europe-west3.run.app/api/v1/seasons/5/submissions\?page\=1\&size\=50\&class\=\&mode\=softcore\&sort\=-tier,duration -o ./src/lib/assets/preloaded.json
 
 # Build
 RUN yarn build
 
 # backend
-FROM golang:1.23.1
+FROM golang:1.23.1-alpine AS api
 
 # Set destination for COPY
-WORKDIR /app
-
-RUN apt-get update && \
-  apt-get install -y \
-  nginx
+WORKDIR /api
 
 # Download Go modules
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
-# intstall go-migrate
-RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.linux-amd64.tar.gz | tar xvz
-RUN mv migrate $GOPATH/bin/migrate
-
 COPY . .
-COPY --from=frontend /web/build /var/www/
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o=/usr/local/bin/app ./cmd/api
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o=/bin/api ./cmd/api
+
+FROM nginx:1.26.2-alpine-slim
+WORKDIR /app
+COPY --from=frontend /web/build /var/www/
+COPY --from=api /bin/api /bin/api
+COPY ./scripts/run.sh /run.sh
+COPY ./nginx.conf ./nginx.conf
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -49,4 +47,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -v -o=/usr/local/bin/app ./cmd/api
 # https://docs.docker.com/reference/dockerfile/#expose
 EXPOSE 8080
 
-CMD ["./scripts/run.sh"]
+CMD ["/run.sh"]
