@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # frontend
-FROM node:20.17-alpine AS frontend
+FROM node:20.17 AS frontend
 
 # Set destination for COPY
 WORKDIR /web
