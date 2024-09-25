@@ -15,7 +15,7 @@ import (
 
 var commands = []*discordgo.ApplicationCommand{
 	{
-		Name:        "list",
+		Name:        "leaderboard",
 		Description: "List top entries from pit leaderboard",
 		Options: []*discordgo.ApplicationCommandOption{
 			{

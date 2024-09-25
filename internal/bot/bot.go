@@ -50,14 +50,12 @@ func Start(db *pgxpool.Pool) (*discordgo.Session, error) {
 		}
 
 		data := i.ApplicationCommandData()
-		if data.Name != "list" {
+		if data.Name != "leaderboard" {
 			return
 		}
 		switch data.Name {
-		case "list":
+		case "leaderboard":
 			handler.List(s, i, parseOptions(data.Options))
-		case "help":
-			// TODO:
 		}
 	})
 
