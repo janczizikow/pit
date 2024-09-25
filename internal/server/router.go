@@ -28,8 +28,8 @@ func Router(s *Server) http.Handler {
 		mux.Handle("/submission", gzhttp.GzipHandler(static))
 	}
 	mux.HandleFunc("GET /api/v1/seasons", sentryHandler.HandleFunc(seasonsHandler.ListSeasons))
-	mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", seasonSubmissionsHandler.ListSubmissions)
-	mux.HandleFunc("POST /api/v1/seasons/{id}/submissions", seasonSubmissionsHandler.CreateSubmission)
+	mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", sentryHandler.HandleFunc(seasonSubmissionsHandler.ListSubmissions))
+	mux.HandleFunc("POST /api/v1/seasons/{id}/submissions", sentryHandler.HandleFunc(seasonSubmissionsHandler.CreateSubmission))
 
 	return middleware.Recover(middleware.IPFilter(mux))
 }
