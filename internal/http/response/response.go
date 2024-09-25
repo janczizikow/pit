@@ -24,5 +24,6 @@ func WriteJSON(w http.ResponseWriter, status int, data interface{}) {
 }
 
 func writeErrorJSON(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte(`{"error": "` + err.Error() + `"}`)) // nolint:golint,errcheck
 }
