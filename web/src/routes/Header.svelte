@@ -1,7 +1,6 @@
 <script>
 	import { page } from '$app/stores';
 	import logo from '$lib/assets/diablo.svg';
-	import Button from '$lib/Button.svelte';
 </script>
 
 <header>
@@ -18,9 +17,7 @@
 	</nav>
 
 	{#if !$page.url.pathname.includes('/submission')}
-		<a href="/submission" class="link">
-			<Button>Submit new run</Button>
-		</a>
+		<a href="/submission" class="button">Submit new run</a>
 	{/if}
 </header>
 

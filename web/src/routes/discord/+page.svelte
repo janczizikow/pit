@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Button from '$lib/Button.svelte';
 	import Heading from '$lib/Heading.svelte';
 	const url = 'https://discord.com/oauth2/authorize?client_id=1288436640758632481';
 </script>
@@ -16,8 +15,8 @@
 	</p>
 
 	<div class="btn">
-		<a target="_blank" rel="noopener noreferrer" href={url} class="link">
-			<Button>Invite Discord Bot</Button>
+		<a target="_blank" rel="noopener noreferrer" href={url} class="button link">
+			Invite Discord Bot
 		</a>
 	</div>
 	<div class="video-container">

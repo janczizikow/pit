@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Button from '$lib/Button.svelte';
 	import type { NewSubmission } from '$lib/types';
 	import Label from '$lib/Label.svelte';
 	import HelperText from '$lib/HelperText.svelte';
@@ -30,7 +29,6 @@
 			const shouldReset = await onSubmit(parseData(values));
 			if (shouldReset) {
 				reset();
-				alert('Submission successful');
 			}
 		},
 		extend: validator({ schema })
@@ -107,7 +105,7 @@
 		<input name="build" class={$errors.build ? 'input-error' : ''} />
 		<HelperText>{$errors.build?.[0] || ''}</HelperText>
 	</div>
-	<Button type="submit" disabled={$isSubmitting || !$isValid}>Submit</Button>
+	<button type="submit" class="button" disabled={$isSubmitting || !$isValid}>Submit</button>
 </form>
 
 <style>

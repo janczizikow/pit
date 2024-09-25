@@ -5,7 +5,9 @@
 	import type { APIError, NewSubmission } from '$lib/types';
 	import { writable } from 'svelte/store';
 	import ErrorMessage from '$lib/ErrorMessage.svelte';
+	import Modal from '$lib/Modal.svelte';
 
+	let showModal = false;
 	let error = writable<APIError | null>(null);
 
 	const handleSubmit = async (data: NewSubmission) => {
@@ -19,6 +21,7 @@
 			if (res.status >= 300) {
 				throw json;
 			}
+			showModal = true;
 			return true;
 		} catch (err) {
 			error.set(err as APIError);
@@ -42,6 +45,12 @@
 	</Text>
 	<ErrorMessage error={$error} />
 	<SubmissionForm onSubmit={handleSubmit} />
+	<Modal bind:showModal>
+		<h2 slot="header">Submission successful</h2>
+		<p class="text">
+			Thank you for your submission! Once it's verified it will show in the leaderboard.
+		</p>
+	</Modal>
 </div>
 
 <style>
@@ -50,5 +59,14 @@
 		margin: 0 auto;
 		width: 100%;
 		max-width: var(--container-width);
+	}
+
+	h2 {
+		font-family: 'Poppins', Helvetica, Arial, sans-serif;
+	}
+	.text {
+		font-size: 16px;
+		text-shadow: 3px 5px 5px rgba(0, 0, 0, 0.5);
+		color: var(--text-default);
 	}
 </style>
