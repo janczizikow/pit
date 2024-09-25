@@ -16,7 +16,7 @@ func parseOptions(options []*discordgo.ApplicationCommandInteractionDataOption) 
 	for _, opt := range options {
 		om[opt.Name] = opt
 	}
-	return
+	return om
 }
 
 func Start(db *pgxpool.Pool) (*discordgo.Session, error) {
@@ -34,6 +34,17 @@ func Start(db *pgxpool.Pool) (*discordgo.Session, error) {
 	handler := &discordHandler{repo: repo}
 
 	session.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		defer func() {
+			if err := recover(); err != nil {
+				zlog.Error().Msg("recovered from panic in bot handler")
+				err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Content: "Error ⚠️ Something went wrong, please try again.",
+					},
+				})
+			}
+		}()
 		if i.Type != discordgo.InteractionApplicationCommand {
 			return
 		}
@@ -42,8 +53,12 @@ func Start(db *pgxpool.Pool) (*discordgo.Session, error) {
 		if data.Name != "list" {
 			return
 		}
-
-		handler.List(s, i, parseOptions(data.Options))
+		switch data.Name {
+		case "list":
+			handler.List(s, i, parseOptions(data.Options))
+		case "help":
+			// TODO:
+		}
 	})
 
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {

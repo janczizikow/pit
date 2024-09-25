@@ -61,8 +61,9 @@ func main() {
 	discord, err := bot.Start(db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to start discord bot")
+	} else {
+		defer discord.Close()
 	}
-	defer discord.Close()
 
 	log.Info().Msg("discord bot is running")
 

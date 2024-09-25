@@ -1,8 +1,6 @@
 package bot
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 )
 
@@ -14,24 +12,12 @@ type Config struct {
 
 // ReadConfig reads the config.json file and unmarshals it into the Config struct
 func ReadConfig() (config *Config, err error) {
-	// TODO: get rid of fmt + get everything from env
-	fmt.Println("Reading config.json...")
-	file, err := os.ReadFile("./config.json")
+	cfg := &Config{}
+	token := os.Getenv("DISCORD_BOT_TOKEN")
+	clientId := os.Getenv("DISCORD_BOT_CLIENT_ID")
 
-	if err != nil {
-		return nil, err
-	}
+	cfg.Token = token
+	cfg.App = clientId
 
-	fmt.Println("Unmarshalling config.json...")
-
-	// unmarshall file into config struct
-	err = json.Unmarshal(file, &config)
-
-	if err != nil {
-		fmt.Println("Error unmarshalling config.json")
-		return nil, err
-	}
-
-	return config, nil
-
+	return cfg, nil
 }
