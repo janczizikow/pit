@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Button from '$lib/Button.svelte';
 	import Heading from '$lib/Heading.svelte';
 	import Text from '$lib/Text.svelte';
 </script>
@@ -12,7 +11,7 @@
 	<Text>The page you are looking for doesn't seem to exist...</Text>
 	<div class="btn">
 		<a href="/" class="link">
-			<Button>Go home</Button>
+			<button class="button">Go home</button>
 		</a>
 	</div>
 </div>
