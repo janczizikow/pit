@@ -17,6 +17,7 @@ RUN curl https://pit-796768497423.europe-west3.run.app/api/v1/seasons/5/submissi
 
 # Build
 RUN yarn build
+RUN find ./build -name "*.js.map" -type f -delete
 
 # backend
 FROM golang:1.23.1-alpine AS api
