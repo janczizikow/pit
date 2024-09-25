@@ -9,6 +9,14 @@
 		<img src={logo} alt="Diablo IV" class="logo" />
 	</a>
 
+	<nav class="nav">
+		<a href="/discord" class="link">
+			<div class="nav-link-content">
+				<div class="nav-link-text">Discord Bot</div>
+			</div>
+		</a>
+	</nav>
+
 	{#if !$page.url.pathname.includes('/submission')}
 		<a href="/submission" class="link">
 			<Button>Submit new run</Button>
@@ -44,7 +52,45 @@
 		height: 48px;
 	}
 
+	.nav {
+		font-family: 'Poppins', Helvetica, Arial, sans-serif;
+		color: #fff;
+		margin-right: auto;
+	}
+
+	.nav-link-content {
+		padding: 0 8px;
+		align-items: center;
+		border-radius: 8px;
+		box-sizing: border-box;
+		display: flex;
+		min-height: 48px;
+		overflow: hidden;
+		text-align: left;
+		transition: var(--transition-hover);
+	}
+
+	.link:is(:hover, :focus) .nav-link-content {
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
+	.nav-link-text {
+		font-size: 18px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: collapse;
+	}
+
 	.link {
+		background: none;
+		border: none;
+		color: inherit;
+		display: flex;
+		font-family: inherit;
+		font-size: 18px;
+		font-weight: inherit;
+		padding: 0px;
+		position: relative;
 		text-decoration: none;
 	}
 </style>

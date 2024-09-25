@@ -27,6 +27,12 @@
   --text-default: #878582;
   --btn-text-default: #e5e0c8;
   --container-width: 720px;
+  --transition-hover-speed: 0.1s;
+  --transition-hover: color var(--transition-hover-speed) ease,
+    background-color var(--transition-hover-speed) ease,
+    text-decoration-color var(--transition-hover-speed) ease,
+    filter var(--transition-hover-speed) ease,
+    border-color var(--transition-hover-speed) ease;
 }
 
 html {

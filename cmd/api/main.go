@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/getsentry/sentry-go"
+	"github.com/janczizikow/pit/internal/bot"
 	"github.com/janczizikow/pit/internal/database"
 	"github.com/janczizikow/pit/internal/server"
 	"github.com/rs/zerolog"
@@ -55,6 +56,16 @@ func main() {
 	defer db.Close()
 
 	log.Info().Msg("connected to postgres DB")
+
+	log.Info().Msg("starting discord bot")
+	discord, err := bot.Start(db)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to start discord bot")
+	} else {
+		defer discord.Close()
+	}
+
+	log.Info().Msg("discord bot is running")
 
 	server := server.New(db)
 	err = server.Run()
