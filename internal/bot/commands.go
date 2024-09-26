@@ -9,6 +9,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/janczizikow/pit/internal/models"
 	"github.com/janczizikow/pit/internal/repository"
 	zlog "github.com/rs/zerolog/log"
 )
@@ -25,23 +26,27 @@ var commands = []*discordgo.ApplicationCommand{
 				Choices: []*discordgo.ApplicationCommandOptionChoice{
 					{
 						Name:  "Barbarian",
-						Value: "barbarian",
+						Value: models.Barbarian,
 					},
 					{
 						Name:  "Druid",
-						Value: "druid",
+						Value: models.Druid,
 					},
 					{
 						Name:  "Necromancer",
-						Value: "necromancer",
+						Value: models.Necromancer,
 					},
 					{
 						Name:  "Rogue",
-						Value: "rogue",
+						Value: models.Rogue,
 					},
 					{
 						Name:  "Sorcerer",
-						Value: "sorcerer",
+						Value: models.Sorcerer,
+					},
+					{
+						Name:  "Spiritborn",
+						Value: models.Spiritborn,
 					},
 				},
 			},

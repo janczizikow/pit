@@ -59,7 +59,17 @@ func (h *seasonSubmissionsHandler) ListSubmissions(w http.ResponseWriter, r *htt
 	}
 
 	v := validator.New()
-	v.Check(validator.In(class, "", models.Barbarian, models.Druid, models.Necromancer, models.Rogue, models.Sorcerer), "class", "is invalid")
+	v.Check(
+		validator.In(
+			class,
+			"",
+			models.Barbarian,
+			models.Druid,
+			models.Necromancer,
+			models.Rogue,
+			models.Sorcerer,
+			models.Spiritborn,
+		), "class", "is invalid")
 	v.Check(validator.In(mode, "", models.Softcore, models.Hardcore), "mode", "is invalid")
 
 	paginator := request.NewPaginator(size, page, sort, map[string]bool{

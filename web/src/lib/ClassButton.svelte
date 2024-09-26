@@ -74,4 +74,13 @@
 	.sorcerer:hover {
 		background-image: url('/classes/hover/SORCERER.webp');
 	}
+	.spiritborn {
+		background-image: url('/classes/base/SPIRITBORN.webp');
+	}
+	.spiritborn-selected {
+		background-image: url('/classes/hover/SPIRITBORN.webp');
+	}
+	.spiritborn:hover {
+		background-image: url('/classes/hover/SPIRITBORN.webp');
+	}
 </style>

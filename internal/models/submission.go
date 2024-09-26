@@ -19,6 +19,7 @@ const (
 	Necromancer = "necromancer"
 	Rogue       = "rogue"
 	Sorcerer    = "sorcerer"
+	Spiritborn  = "spiritborn"
 )
 
 type Submission struct {
@@ -43,7 +44,15 @@ func ValidateSubmission(v *validator.Validator, submission *Submission) {
 	v.Check(len(submission.Name) <= 255, "name", "must be not more than 255 bytes long")
 
 	v.Check(submission.Class != "", "class", "is required")
-	v.Check(validator.In(submission.Class, Barbarian, Druid, Necromancer, Rogue, Sorcerer), "class", "is invalid")
+	v.Check(validator.In(
+		submission.Class,
+		Barbarian,
+		Druid,
+		Necromancer,
+		Rogue,
+		Sorcerer,
+		Spiritborn,
+	), "class", "is invalid")
 
 	v.Check(submission.Mode != "", "mode", "is required")
 	v.Check(validator.In(submission.Mode, Softcore, Hardcore), "mode", "is invalid")
