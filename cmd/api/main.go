@@ -57,21 +57,22 @@ func main() {
 
 	log.Info().Msg("connected to postgres DB")
 
-	log.Info().Msg("starting discord bot")
-	discord, err := bot.Start(db)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to start discord bot")
-	} else {
+	go func() {
+		log.Info().Msg("starting discord bot")
+		discord, err := bot.Start(db)
+		if err != nil {
+			log.Error().Err(err).Msg("failed to start discord bot")
+			return
+		}
 		defer discord.Close()
-	}
+		log.Info().Msg("discord bot is running")
 
-	log.Info().Msg("discord bot is running")
+		<-make(chan struct{})
+	}()
 	log.Info().Msg("starting server")
 
 	server := server.New(db)
 	err = server.Run()
-
-	log.Info().Msg("server is running")
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to start the server")

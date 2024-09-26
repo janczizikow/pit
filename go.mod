@@ -8,7 +8,6 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.18.1
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/jpillora/ipfilter v1.2.9
-	github.com/klauspost/compress v1.17.7
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
