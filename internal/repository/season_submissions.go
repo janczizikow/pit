@@ -49,10 +49,10 @@ func (r *seasonSubmissionsRepository) List(seasonId int, params ListSubmissionsP
 													created_at,
 													updated_at
 														FROM (
-															SELECT DISTINCT ON (name, class) *
+															SELECT DISTINCT ON (name, class, mode) *
 															FROM submissions
 															WHERE season_id = $1
-															ORDER BY name ASC, class ASC, %s
+															ORDER BY name ASC, class ASC, mode ASC, %s
 														) sub
 												WHERE verified = true
 												AND season_id = $1
@@ -73,10 +73,10 @@ func (r *seasonSubmissionsRepository) List(seasonId int, params ListSubmissionsP
 							created_at,
 							updated_at
 								FROM (
-									SELECT DISTINCT ON (name, class) *
+									SELECT DISTINCT ON (name, class, mode) *
 									FROM submissions
 									WHERE season_id = $1
-									ORDER BY name ASC, class ASC, tier DESC, duration ASC
+									ORDER BY name ASC, class ASC, mode ASC, tier DESC, duration ASC
 								) sub
 						WHERE verified = true
 						AND season_id = $1

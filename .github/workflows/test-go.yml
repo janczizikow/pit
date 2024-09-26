@@ -32,7 +32,7 @@ jobs:
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate $GOPATH/bin/migrate
       - name: Run migrations
-        run: migrate -path ./internal/database/migrations -database=$DB_DSN up
+        run: migrate -path ./migrations -database=$DB_DSN up
         env:
           DB_DSN: postgres://postgres:postgres@localhost/pit_test?sslmode=disable
       - name: Run tests

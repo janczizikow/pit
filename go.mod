@@ -11,6 +11,7 @@ require (
 	github.com/klauspost/compress v1.17.7
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.9.0
+	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
 )
 
 require (

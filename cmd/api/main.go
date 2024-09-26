@@ -66,9 +66,12 @@ func main() {
 	}
 
 	log.Info().Msg("discord bot is running")
+	log.Info().Msg("starting server")
 
 	server := server.New(db)
 	err = server.Run()
+
+	log.Info().Msg("server is running")
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to start the server")
