@@ -1,42 +1,25 @@
 # syntax=docker/dockerfile:1
-# frontend
-FROM node:20.17 AS frontend
-
-# Set destination for COPY
-WORKDIR /web
-
-# Download npm modules
-COPY web/package.json .
-COPY web/yarn.lock .
-RUN yarn --frozen-lockfile
-
-COPY web/ .
-
-# Preload data for homepage
-RUN curl https://pit-796768497423.europe-west3.run.app/api/v1/seasons/5/submissions\?page\=1\&size\=50\&class\=\&mode\=softcore\&sort\=-tier,duration -o ./src/lib/assets/preloaded.json
-
-# Build
-RUN yarn build
-RUN find ./build -name "*.js.map" -type f -delete
-
-# backend
 FROM golang:1.23.1-alpine AS api
+
+ARG TARGETOS
+ARG TARGETARCH
 
 # Set destination for COPY
 WORKDIR /api
 
-# Download Go modules
-COPY go.mod go.sum ./
+# Copy local code to the container image.
+COPY . .
 RUN go mod download && go mod verify
 
-COPY . .
-
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o=/bin/api ./cmd/api
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -mod=readonly -v -o=/bin/api ./cmd/api
 
 FROM alpine
-COPY --from=frontend /web/build /bin/web/build
+RUN apk add --no-cache ca-certificates
+
+# Copy the binary to the production image from the api stage.
 COPY --from=api /bin/api /bin/api
+# Copy the migrations to the production image from the api stage.
 COPY --from=api api/migrations/ /migrations
 
 # Optional:
@@ -46,4 +29,5 @@ COPY --from=api api/migrations/ /migrations
 # https://docs.docker.com/reference/dockerfile/#expose
 EXPOSE 8080
 
+# Run the web service on container startup.
 CMD ["/bin/api"]

@@ -1,0 +1,18 @@
+{
+	"hosting": {
+		"public": "build",
+		"ignore": ["firebase.json", "**/.*", "**/node_modules/**", "_redirects"],
+		"trailingSlash": true,
+		"cleanUrls": true,
+		"rewrites": [
+			{
+				"source": "/api/**",
+				"run": {
+					"serviceId": "pit",
+					"region": "europe-west3",
+					"pinTag": false
+				}
+			}
+		]
+	}
+}
