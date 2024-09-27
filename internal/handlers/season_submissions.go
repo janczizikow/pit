@@ -58,6 +58,15 @@ func (h *seasonSubmissionsHandler) ListSubmissions(w http.ResponseWriter, r *htt
 		return
 	}
 
+	paginator := request.NewPaginator(size, page, sort, map[string]bool{
+		"created_at":  true,
+		"duration":    true,
+		"tier":        true,
+		"-created_at": true,
+		"-duration":   true,
+		"-tier":       true,
+	})
+
 	v := validator.New()
 	v.Check(
 		validator.In(
@@ -72,14 +81,14 @@ func (h *seasonSubmissionsHandler) ListSubmissions(w http.ResponseWriter, r *htt
 		), "class", "is invalid")
 	v.Check(validator.In(mode, "", models.Softcore, models.Hardcore), "mode", "is invalid")
 
-	paginator := request.NewPaginator(size, page, sort, map[string]bool{
-		"created_at":  true,
-		"duration":    true,
-		"tier":        true,
-		"-created_at": true,
-		"-duration":   true,
-		"-tier":       true,
-	})
+	if !v.Valid() {
+		response.WriteJSON(
+			w, http.StatusOK, map[string]interface{}{
+				"data":     []interface{}{},
+				"metadata": paginator.CalculateMetadata(0),
+			})
+		return
+	}
 
 	if ok, errs := paginator.Valid(); !ok {
 		response.FailedValidationResponse(w, r, errs)
