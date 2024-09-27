@@ -19,6 +19,9 @@ func Router(s *Server) http.Handler {
 	seasonsHandler := handlers.NewSeasonsHandler(repo.Seasons)
 	seasonSubmissionsHandler := handlers.NewSeasonSubmissionsHandler(repo.SeasonSubmissions)
 
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://diablo4pit.web.app/", http.StatusMovedPermanently)
+	})
 	mux.HandleFunc("GET /api/v1/seasons", sentryHandler.HandleFunc(seasonsHandler.ListSeasons))
 	mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", sentryHandler.HandleFunc(seasonSubmissionsHandler.ListSubmissions))
 	mux.HandleFunc("POST /api/v1/seasons/{id}/submissions", sentryHandler.HandleFunc(seasonSubmissionsHandler.CreateSubmission))
