@@ -8,8 +8,7 @@
 		defaultOptions: {
 			queries: {
 				retry: false,
-				enabled: browser,
-				refetchOnWindowFocus: false
+				enabled: browser
 			}
 		}
 	});
