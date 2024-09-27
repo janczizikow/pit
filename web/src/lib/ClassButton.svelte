@@ -4,7 +4,11 @@
 	export let onSelectClass: (cls: string) => void;
 </script>
 
-<button class={selected ? `${type}-selected` : type} on:click={() => onSelectClass(type)}>
+<button
+	aria-label={type}
+	class={selected ? `${type}-selected` : type}
+	on:click={() => onSelectClass(type)}
+>
 	<span class="hidden">{type}</span></button
 >
 

@@ -130,6 +130,7 @@
 			<select
 				name="season"
 				class="season-selector"
+				aria-label="Season"
 				value={`${$query.season}`}
 				on:change={(e) => {
 					onChangeSeason(e.currentTarget.value);
