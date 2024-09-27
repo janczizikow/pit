@@ -9,6 +9,8 @@ import (
 )
 
 func TestMatches(t *testing.T) {
+	t.Parallel()
+
 	r := regexp.MustCompile(`\d`)
 
 	assert.Equal(t, true, validator.Matches(r, "0123456789"))
@@ -16,6 +18,8 @@ func TestMatches(t *testing.T) {
 }
 
 func TestIn(t *testing.T) {
+	t.Parallel()
+
 	str := "abc"
 
 	assert.Equal(t, true, validator.In(str, "abc", "def"))
@@ -23,6 +27,8 @@ func TestIn(t *testing.T) {
 }
 
 func TestValid(t *testing.T) {
+	t.Parallel()
+
 	v := validator.New()
 
 	assert.Equal(t, true, v.Valid())
@@ -31,6 +37,8 @@ func TestValid(t *testing.T) {
 }
 
 func TestAddError(t *testing.T) {
+	t.Parallel()
+
 	v := validator.New()
 
 	assert.Equal(t, make(map[string]string), v.Errors)
@@ -42,6 +50,8 @@ func TestAddError(t *testing.T) {
 }
 
 func TestCheck(t *testing.T) {
+	t.Parallel()
+
 	v := validator.New()
 
 	v.Check(true, "test", "must not be valid")

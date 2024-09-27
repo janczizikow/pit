@@ -11,6 +11,8 @@ import (
 )
 
 func TestCORS(t *testing.T) {
+	t.Parallel()
+
 	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})

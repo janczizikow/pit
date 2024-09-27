@@ -1,7 +1,6 @@
 package handlers_test
 
 import (
-	"context"
 	"log"
 	"os"
 	"testing"
@@ -21,8 +20,7 @@ func TestMain(m *testing.M) {
 	}
 
 	code := m.Run()
-	db.Exec(context.Background(), "DELETE FROM submissions")
-	db.Exec(context.Background(), "DELETE FROM seasons")
+
 	db.Close()
 	os.Exit(code)
 }

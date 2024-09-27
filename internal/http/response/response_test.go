@@ -11,6 +11,8 @@ import (
 )
 
 func TestWriteJSON(t *testing.T) {
+	t.Parallel()
+
 	testData := map[string]interface{}{
 		"key": "value",
 	}
@@ -23,6 +25,8 @@ func TestWriteJSON(t *testing.T) {
 }
 
 func TestWriteJSONError(t *testing.T) {
+	t.Parallel()
+
 	w := &mockResponseWriter{writeError: true}
 	response.WriteJSON(w, http.StatusOK, nil)
 

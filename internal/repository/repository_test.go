@@ -22,8 +22,7 @@ func TestMain(m *testing.M) {
 	}
 	ctx = context.Background()
 	code := m.Run()
-	db.Exec(ctx, "DELETE FROM submissions")
-	db.Exec(ctx, "DELETE FROM seasons")
+
 	db.Close()
 	os.Exit(code)
 }

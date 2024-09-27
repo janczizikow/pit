@@ -10,6 +10,7 @@ import (
 
 type SeasonsHandler interface {
 	ListSeasons(w http.ResponseWriter, r *http.Request)
+	Current(w http.ResponseWriter, r *http.Request)
 }
 
 type seasonsHandler struct {
@@ -31,4 +32,13 @@ func (h *seasonsHandler) ListSeasons(w http.ResponseWriter, r *http.Request) {
 		"data":     seasons,
 		"metadata": paginator.CalculateMetadata(total),
 	})
+}
+
+func (h *seasonsHandler) Current(w http.ResponseWriter, r *http.Request) {
+	season, err := h.repo.Current()
+	if err != nil {
+		response.NotFoundResponse(w, r)
+		return
+	}
+	response.WriteJSON(w, http.StatusOK, season)
 }

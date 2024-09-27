@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/janczizikow/pit/internal/handlers"
+	"github.com/janczizikow/pit/internal/models"
 	"github.com/janczizikow/pit/internal/repository"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,7 +20,6 @@ import (
 )
 
 func TestCreateSeasonSubmissionHandler(t *testing.T) {
-
 	t.Run("returns bad request error if body is not valid JSON", func(t *testing.T) {
 		repo := repository.NewSeasonSubmissionsRepository(nil)
 		submissionsHandler := handlers.NewSeasonSubmissionsHandler(repo)
@@ -76,6 +77,15 @@ func TestCreateSeasonSubmissionHandler(t *testing.T) {
 		mux := http.NewServeMux()
 		mux.HandleFunc("POST /api/v1/seasons/{id}/submissions", submissionsHandler.CreateSubmission)
 
+		t.Cleanup(func() {
+			submission := models.Submission{}
+			err := json.Unmarshal(rr.Body.Bytes(), &submission)
+			require.NoError(t, err)
+			_, err = db.Exec(context.Background(), "DELETE FROM submissions WHERE id = $1", submission.ID)
+			require.NoError(t, err)
+			_, err = db.Exec(context.Background(), "DELETE FROM seasons WHERE id = $1", seasonId)
+			require.NoError(t, err)
+		})
 		mux.ServeHTTP(rr, req)
 		assert.Equal(t, http.StatusCreated, rr.Code)
 	})
@@ -87,15 +97,48 @@ func TestListSeasonSubmissionHandler(t *testing.T) {
 	seasonId, err := createSeason(db)
 	require.NoError(t, err)
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/v1/seasons/%v/submissions", seasonId), strings.NewReader(``))
-	require.NoError(t, err)
+	t.Cleanup(func() {
+		_, err = db.Exec(context.Background(), "DELETE FROM seasons WHERE id = $1", seasonId)
+		require.NoError(t, err)
+	})
 
-	rr := httptest.NewRecorder()
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", submissionsHandler.ListSubmissions)
+	t.Run("returns 200 if no submissions exist", func(t *testing.T) {
+		req, err := http.NewRequest("GET", fmt.Sprintf("/api/v1/seasons/%v/submissions", seasonId), nil)
+		require.NoError(t, err)
 
-	mux.ServeHTTP(rr, req)
-	assert.Equal(t, http.StatusOK, rr.Code)
+		rr := httptest.NewRecorder()
+		mux := http.NewServeMux()
+		mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", submissionsHandler.ListSubmissions)
+
+		mux.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusOK, rr.Code)
+		assert.JSONEq(t, rr.Body.String(), `{"data":[],"metadata":{}}`)
+	})
+
+	t.Run("returns 200 and empty array if class query is invalid", func(t *testing.T) {
+		req, err := http.NewRequest("GET", fmt.Sprintf("/api/v1/seasons/%v/submissions?class=test", seasonId), nil)
+		require.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		mux := http.NewServeMux()
+		mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", submissionsHandler.ListSubmissions)
+
+		mux.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusOK, rr.Code)
+		assert.JSONEq(t, rr.Body.String(), `{"data":[],"metadata":{}}`)
+	})
+
+	t.Run("returns 422 if pagination is invalid", func(t *testing.T) {
+		req, err := http.NewRequest("GET", fmt.Sprintf("/api/v1/seasons/%v/submissions?page=-1&size=1001", seasonId), nil)
+		require.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		mux := http.NewServeMux()
+		mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", submissionsHandler.ListSubmissions)
+
+		mux.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+	})
 }
 
 func createSeason(db *pgxpool.Pool) (int, error) {

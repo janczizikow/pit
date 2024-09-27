@@ -23,6 +23,7 @@ func Router(s *Server) http.Handler {
 		http.Redirect(w, r, "https://diablo4pit.web.app/", http.StatusMovedPermanently)
 	})
 	mux.HandleFunc("GET /api/v1/seasons", sentryHandler.HandleFunc(seasonsHandler.ListSeasons))
+	mux.Handle("GET /api/v1/seasons/current", sentryHandler.HandleFunc(seasonsHandler.Current))
 	mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", sentryHandler.HandleFunc(seasonSubmissionsHandler.ListSubmissions))
 	mux.HandleFunc("POST /api/v1/seasons/{id}/submissions", sentryHandler.HandleFunc(seasonSubmissionsHandler.CreateSubmission))
 
