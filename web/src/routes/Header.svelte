@@ -73,6 +73,7 @@
 
 	.nav-link-text {
 		font-size: 18px;
+		font-weight: 700;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: collapse;

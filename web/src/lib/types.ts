@@ -1,3 +1,13 @@
+export interface Season {
+	id: number;
+	name: string;
+	pit: boolean;
+	start: string;
+	end: string;
+	created_at: string;
+	updated_at: string;
+}
+
 export interface NewSubmission {
 	name: string;
 	class: string;

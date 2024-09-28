@@ -9,4 +9,3 @@ mv "$(pwd)/build/404/index.html" "$(pwd)/build/404.html"
 rm -rf "$(pwd)/build/404"
 
 sed -i -e 's/\.\.\//.\//g' build/404.html
-rm "$(pwd)/build/404.html-e"

@@ -1,12 +1,15 @@
 <script lang="ts">
 	export let type: string;
 	export let selected: boolean;
+	export let disabled: boolean = false;
 	export let onSelectClass: (cls: string) => void;
 </script>
 
 <button
 	aria-label={type}
+	{disabled}
 	class={selected ? `${type}-selected` : type}
+	class:disabled
 	on:click={() => onSelectClass(type)}
 >
 	<span class="hidden">{type}</span></button
@@ -31,6 +34,11 @@
 		}
 	}
 
+	.disabled {
+		filter: grayscale(1);
+		cursor: not-allowed;
+	}
+
 	.hidden {
 		display: none;
 		visibility: hidden;
@@ -44,7 +52,7 @@
 		background-image: url('/classes/hover/BARBARIAN.webp');
 		filter: brightness(1.6);
 	}
-	.barbarian:hover {
+	.barbarian:not(.disabled):hover {
 		background-image: url('/classes/hover/BARBARIAN.webp');
 		filter: brightness(1.6);
 	}
@@ -55,7 +63,7 @@
 		background-image: url('/classes/hover/DRUID.webp');
 		filter: brightness(1.6);
 	}
-	.druid:hover {
+	.druid:not(.disabled):hover {
 		background-image: url('/classes/hover/DRUID.webp');
 		filter: brightness(1.6);
 	}
@@ -66,7 +74,7 @@
 		background-image: url('/classes/hover/NECROMANCER.webp');
 		filter: brightness(1.6);
 	}
-	.necromancer:hover {
+	.necromancer:not(.disabled):hover {
 		background-image: url('/classes/hover/NECROMANCER.webp');
 		filter: brightness(1.6);
 	}
@@ -77,7 +85,7 @@
 		background-image: url('/classes/hover/ROGUE.webp');
 		filter: brightness(1.6);
 	}
-	.rogue:hover {
+	.rogue:not(.disabled):hover {
 		background-image: url('/classes/hover/ROGUE.webp');
 		filter: brightness(1.6);
 	}
@@ -88,7 +96,7 @@
 		background-image: url('/classes/hover/SORCERER.webp');
 		filter: brightness(1.6);
 	}
-	.sorcerer:hover {
+	.sorcerer:not(.disabled):hover {
 		background-image: url('/classes/hover/SORCERER.webp');
 		filter: brightness(1.6);
 	}
@@ -99,7 +107,7 @@
 		background-image: url('/classes/hover/SPIRITBORN.webp');
 		filter: brightness(1.6);
 	}
-	.spiritborn:hover {
+	.spiritborn:not(.disabled):hover {
 		background-image: url('/classes/hover/SPIRITBORN.webp');
 		filter: brightness(1.6);
 	}

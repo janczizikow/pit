@@ -112,6 +112,13 @@
 <svelte:head>
 	<title>Diablo 4 Pit - Leaderboard</title>
 	<meta name="description" content="unofficial Diablo 4 Seasonal Pit Leaderboard." />
+	<link rel="preload" as="image" href="/buttons/d4-button-filigree-center.webp" />
+	<link rel="preload" as="image" href="/classes/hover/BARBARIAN.webp" />
+	<link rel="preload" as="image" href="/classes/hover/DRUID.webp" />
+	<link rel="preload" as="image" href="/classes/hover/NECROMANCER.webp" />
+	<link rel="preload" as="image" href="/classes/hover/ROGUE.webp" />
+	<link rel="preload" as="image" href="/classes/hover/SORCERER.webp" />
+	<link rel="preload" as="image" href="/classes/hover/SORCERER.webp" />
 </svelte:head>
 <div>
 	<div class="video-container">
@@ -166,6 +173,12 @@
 					<ClassButton
 						type="sorcerer"
 						selected={$query.class === 'sorcerer'}
+						onSelectClass={onChangeClass}
+					/>
+					<ClassButton
+						disabled={$query.season < 6}
+						type="spiritborn"
+						selected={$query.class === 'spiritborn'}
 						onSelectClass={onChangeClass}
 					/>
 				</div>

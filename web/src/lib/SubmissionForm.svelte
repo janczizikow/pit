@@ -6,6 +6,8 @@
 	import * as zod from 'zod';
 	import { createForm } from 'felte';
 
+	export let seasonId: number;
+	export let isBusy: boolean;
 	export let onSubmit: (data: NewSubmission) => Promise<boolean>;
 	const MODES = ['softcore', 'hardcore'] as const;
 	const CLASSES = ['barbarian', 'druid', 'necromancer', 'rogue', 'sorcerer'] as const;
@@ -56,6 +58,7 @@
 			<option value="necromancer">Necromancer</option>
 			<option value="rogue">Rogue</option>
 			<option value="sorcerer">Sorcerer</option>
+			<option value="spiritborn" disabled={seasonId < 6}>Spiritborn</option>
 		</select>
 		<HelperText>{$errors.class?.[0] || ''}</HelperText>
 	</div>
@@ -105,7 +108,9 @@
 		<input name="build" class={$errors.build ? 'input-error' : ''} />
 		<HelperText>{$errors.build?.[0] || ''}</HelperText>
 	</div>
-	<button type="submit" class="button" disabled={$isSubmitting || !$isValid}>Submit</button>
+	<button type="submit" class="button" disabled={isBusy || $isSubmitting || !$isValid}
+		>Submit</button
+	>
 </form>
 
 <style>
