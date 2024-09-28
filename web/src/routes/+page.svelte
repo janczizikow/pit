@@ -12,6 +12,7 @@
 	import { writable } from 'svelte/store';
 	import type { SubmissionsResponse } from '$lib/types';
 	import preloaded from '$lib/assets/preloaded.json';
+	import { getInt } from '$lib/utils';
 
 	const query = writable({
 		page: 1,
@@ -84,14 +85,6 @@
 			left: 0,
 			behavior: 'smooth'
 		});
-	};
-
-	const getInt = (str: string, fallback: number): number => {
-		let res = parseInt(str);
-		if (res <= 0 || isNaN(res) || !Number.isFinite(res)) {
-			res = fallback;
-		}
-		return res;
 	};
 
 	afterNavigate(() => {

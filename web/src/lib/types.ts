@@ -48,3 +48,18 @@ export interface APIError {
 	status: number;
 	errors: { error: string; param: string }[];
 }
+
+export interface SeasonStatistics {
+	class?: string;
+	total_submissions: number;
+	unique_player_count: number;
+	max_tier: number;
+	average_tier?: number;
+	percentage_total?: number;
+	percentage_unique?: number;
+}
+
+export interface SeasonStatisticsResponse {
+	data: SeasonStatistics[];
+	totals: SeasonStatistics;
+}

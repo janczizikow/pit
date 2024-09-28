@@ -155,13 +155,14 @@ func (r *seasonSubmissionsRepository) Statistics(seasonId int) (*models.Statisti
 						SUM(COUNT(*)) OVER(),
 						SUM(COUNT(DISTINCT "name")) OVER() AS sum_unique,
 						MAX(MAX(tier)) OVER(),
+						ROUND(SUM(SUM(tier)) OVER() / SUM(COUNT(*)) OVER(), 0) AS avg,
 						class,
 						COUNT(*) AS total_class,
 						COUNT(DISTINCT "name") AS unique_class,
 						MAX(tier) AS max_class,
-						AVG(tier) AS avg_class,
-						COUNT(*) * 100.0 / SUM(COUNT(*)) OVER() as percentage_total,
-						COUNT(DISTINCT "name") * 100.0 / SUM(COUNT(DISTINCT "name")) OVER() AS percentage_unique
+						AVG(tier)::numeric::integer AS avg_class,
+						ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) as percentage_total,
+						ROUND(COUNT(DISTINCT "name") * 100.0 / SUM(COUNT(DISTINCT "name")) OVER(), 2) AS percentage_unique
 					FROM submissions
 					WHERE season_id = $1
 					GROUP BY class;`
@@ -176,6 +177,7 @@ func (r *seasonSubmissionsRepository) Statistics(seasonId int) (*models.Statisti
 			&statistics.TotalSubmissions,
 			&statistics.UniquePlayerCount,
 			&statistics.MaxTier,
+			&statistics.AverageTier,
 			&stat.Class,
 			&stat.TotalSubmissions,
 			&stat.UniquePlayerCount,
