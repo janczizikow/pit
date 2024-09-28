@@ -20,6 +20,7 @@ type ListSubmissionsParams struct {
 type SeasonSubmissionsRepository interface {
 	List(seasonId int, params ListSubmissionsParams) ([]*models.Submission, int, error)
 	Create(submission *models.Submission) (*models.Submission, error)
+	Statistics(seasonId int) (*models.Statistics, []*models.Statistics, error)
 }
 
 type seasonSubmissionsRepository struct {
@@ -145,4 +146,51 @@ func (r *seasonSubmissionsRepository) Create(submission *models.Submission) (*mo
 		&newSubmission.UpdatedAt,
 	)
 	return &newSubmission, err
+}
+
+func (r *seasonSubmissionsRepository) Statistics(seasonId int) (*models.Statistics, []*models.Statistics, error) {
+	statistics := models.Statistics{}
+	classesStatistics := make([]*models.Statistics, 0)
+	query := `SELECT
+						SUM(COUNT(*)) OVER(),
+						SUM(COUNT(DISTINCT "name")) OVER() AS sum_unique,
+						MAX(MAX(tier)) OVER(),
+						class,
+						COUNT(*) AS total_class,
+						COUNT(DISTINCT "name") AS unique_class,
+						MAX(tier) AS max_class,
+						AVG(tier) AS avg_class,
+						COUNT(*) * 100.0 / SUM(COUNT(*)) OVER() as percentage_total,
+						COUNT(DISTINCT "name") * 100.0 / SUM(COUNT(DISTINCT "name")) OVER() AS percentage_unique
+					FROM submissions
+					WHERE season_id = $1
+					GROUP BY class;`
+	rows, err := r.db.Query(context.Background(), query, seasonId)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		stat := models.Statistics{}
+		err = rows.Scan(
+			&statistics.TotalSubmissions,
+			&statistics.UniquePlayerCount,
+			&statistics.MaxTier,
+			&stat.Class,
+			&stat.TotalSubmissions,
+			&stat.UniquePlayerCount,
+			&stat.MaxTier,
+			&stat.AverageTier,
+			&stat.PercentageTotal,
+			&stat.PercentageUnique,
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+		classesStatistics = append(classesStatistics, &stat)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, nil, err
+	}
+	return &statistics, classesStatistics, err
 }
