@@ -1,11 +1,11 @@
 <script>
 	import { page } from '$app/stores';
-	import logo from '$lib/assets/diablo.svg';
+	import logo from '$lib/assets/logo.svg';
 </script>
 
 <header>
-	<a href="/">
-		<img src={logo} alt="Diablo IV" class="logo" />
+	<a href="/" class="center">
+		<img src={logo} alt="Diablo IV Pit" class="logo" />
 	</a>
 
 	<nav class="nav">
@@ -40,6 +40,12 @@
 		background-color: rgba(36, 37, 38, 0.95);
 		border-radius: 8px;
 		z-index: 1;
+	}
+
+	.center {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	@supports ((-webkit-backdrop-filter: blur(20px)) or (backdrop-filter: blur(20px))) {
