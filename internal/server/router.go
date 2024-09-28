@@ -26,7 +26,7 @@ func Router(s *Server) http.Handler {
 	mux.Handle("GET /api/v1/seasons/current", sentryHandler.HandleFunc(seasonsHandler.Current))
 	mux.HandleFunc("GET /api/v1/seasons/{id}/submissions", sentryHandler.HandleFunc(seasonSubmissionsHandler.ListSubmissions))
 	mux.HandleFunc("POST /api/v1/seasons/{id}/submissions", sentryHandler.HandleFunc(seasonSubmissionsHandler.CreateSubmission))
-	mux.HandleFunc("GET /api/v1/seasons/{id}/statistics", sentryHandler.HandleFunc(seasonSubmissionsHandler.GetStatistics))
+	mux.HandleFunc("GET /api/v1/seasons/{id}/statistics", sentryHandler.HandleFunc(seasonsHandler.GetStatistics))
 
 	return middleware.Recover(middleware.IPFilter(middleware.Compression(mux)))
 }

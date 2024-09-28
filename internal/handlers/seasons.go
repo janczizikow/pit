@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/janczizikow/pit/internal/http/request"
 	"github.com/janczizikow/pit/internal/http/response"
@@ -11,6 +12,7 @@ import (
 type SeasonsHandler interface {
 	ListSeasons(w http.ResponseWriter, r *http.Request)
 	Current(w http.ResponseWriter, r *http.Request)
+	GetStatistics(w http.ResponseWriter, r *http.Request)
 }
 
 type seasonsHandler struct {
@@ -41,4 +43,23 @@ func (h *seasonsHandler) Current(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.WriteJSON(w, http.StatusOK, season)
+}
+
+func (h *seasonsHandler) GetStatistics(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	seasonId, err := strconv.Atoi(id)
+	if err != nil || seasonId < 0 {
+		response.NotFoundResponse(w, r)
+		return
+	}
+	totals, statistics, err := h.repo.Statistics(seasonId)
+	if err != nil {
+		response.InternalServerErrorResponse(w, r)
+		return
+	}
+
+	response.WriteJSON(w, http.StatusOK, map[string]interface{}{
+		"totals": totals,
+		"data":   statistics,
+	})
 }

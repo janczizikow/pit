@@ -34,17 +34,3 @@ func TestCreateSubmission(t *testing.T) {
 		require.NoError(t, err)
 	})
 }
-
-func TestStatistics(t *testing.T) {
-	t.Parallel()
-
-	repo := repository.New(db)
-	season, err := repo.Seasons.Create(&models.Season{Name: "Test", End: nil})
-	require.NoError(t, err)
-	t.Cleanup(func() {
-		_, err := db.Exec(ctx, "DELETE FROM seasons WHERE id = $1", season.ID)
-		require.NoError(t, err)
-	})
-	_, _, err = repo.SeasonSubmissions.Statistics(season.ID)
-	require.NoError(t, err)
-}

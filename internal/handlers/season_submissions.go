@@ -14,7 +14,6 @@ import (
 type SeasonSubmissionsHandler interface {
 	ListSubmissions(w http.ResponseWriter, r *http.Request)
 	CreateSubmission(w http.ResponseWriter, r *http.Request)
-	GetStatistics(w http.ResponseWriter, r *http.Request)
 }
 
 type seasonSubmissionsHandler struct {
@@ -146,24 +145,4 @@ func (h *seasonSubmissionsHandler) CreateSubmission(w http.ResponseWriter, r *ht
 	}
 
 	response.WriteJSON(w, http.StatusCreated, created)
-}
-
-func (h *seasonSubmissionsHandler) GetStatistics(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-	seasonId, err := strconv.Atoi(id)
-	if err != nil || seasonId < 0 {
-		response.NotFoundResponse(w, r)
-		return
-	}
-	totals, statistics, err := h.repo.Statistics(seasonId)
-	if err != nil {
-		response.InternalServerErrorResponse(w, r)
-		return
-	}
-
-	response.WriteJSON(w, http.StatusOK, map[string]interface{}{
-		"totals": totals,
-		"data":   statistics,
-	})
-
 }
