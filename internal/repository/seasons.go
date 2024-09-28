@@ -15,6 +15,7 @@ type SeasonsRepository interface {
 	Current() (*models.Season, error)
 	// Create creates a new season.
 	Create(season *models.Season) (*models.Season, error)
+	Statistics(seasonId int) (*models.Statistics, []*models.Statistics, error)
 }
 
 type seasonsRepository struct {
@@ -95,4 +96,53 @@ func (r *seasonsRepository) Create(season *models.Season) (*models.Season, error
 		&newSeason.UpdatedAt,
 	)
 	return &newSeason, err
+}
+
+func (r *seasonsRepository) Statistics(seasonId int) (*models.Statistics, []*models.Statistics, error) {
+	statistics := models.Statistics{}
+	classesStatistics := make([]*models.Statistics, 0)
+	query := `SELECT
+						SUM(COUNT(*)) OVER(),
+						SUM(COUNT(DISTINCT "name")) OVER() AS sum_unique,
+						MAX(MAX(tier)) OVER(),
+						ROUND(SUM(SUM(tier)) OVER() / SUM(COUNT(*)) OVER(), 0) AS avg,
+						class,
+						COUNT(*) AS total_class,
+						COUNT(DISTINCT "name") AS unique_class,
+						MAX(tier) AS max_class,
+						AVG(tier)::numeric::integer AS avg_class,
+						ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) as percentage_total,
+						ROUND(COUNT(DISTINCT "name") * 100.0 / SUM(COUNT(DISTINCT "name")) OVER(), 2) AS percentage_unique
+					FROM submissions
+					WHERE season_id = $1
+					GROUP BY class;`
+	rows, err := r.db.Query(context.Background(), query, seasonId)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		stat := models.Statistics{}
+		err = rows.Scan(
+			&statistics.TotalSubmissions,
+			&statistics.UniquePlayerCount,
+			&statistics.MaxTier,
+			&statistics.AverageTier,
+			&stat.Class,
+			&stat.TotalSubmissions,
+			&stat.UniquePlayerCount,
+			&stat.MaxTier,
+			&stat.AverageTier,
+			&stat.PercentageTotal,
+			&stat.PercentageUnique,
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+		classesStatistics = append(classesStatistics, &stat)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, nil, err
+	}
+	return &statistics, classesStatistics, err
 }

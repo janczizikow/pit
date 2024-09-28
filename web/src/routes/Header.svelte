@@ -9,6 +9,11 @@
 	</a>
 
 	<nav class="nav">
+		<a href="/stats" class="link">
+			<div class="nav-link-content">
+				<div class="nav-link-text">Stats</div>
+			</div>
+		</a>
 		<a href="/discord" class="link">
 			<div class="nav-link-content">
 				<div class="nav-link-text">Discord Bot</div>
@@ -50,9 +55,15 @@
 	}
 
 	.nav {
+		display: none;
+		flex: 1 1 auto;
 		font-family: 'Poppins', Helvetica, Arial, sans-serif;
 		color: #fff;
-		margin-right: auto;
+	}
+	@media only screen and (min-width: 768px) {
+		.nav {
+			display: flex;
+		}
 	}
 
 	.nav-link-content {

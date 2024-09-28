@@ -30,6 +30,7 @@ func TestCreateSubmission(t *testing.T) {
 	newSubmission.UpdatedAt = submission.UpdatedAt
 	assert.Equal(t, newSubmission, submission)
 	t.Cleanup(func() {
-		db.Exec(ctx, "DELETE FROM submissions WHERE id = $1", submission.ID)
+		_, err := db.Exec(ctx, "DELETE FROM submissions WHERE id = $1", submission.ID)
+		require.NoError(t, err)
 	})
 }
