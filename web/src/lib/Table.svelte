@@ -19,6 +19,12 @@
 		}
 		return `https://${link}`;
 	}
+	function isLink(link: string) {
+		if (!link) {
+			return false;
+		}
+		return URL.canParse(link) || link.includes('/');
+	}
 </script>
 
 <div class="wrapper">
@@ -65,16 +71,12 @@
 						>
 					</td>
 					<td class="link-column">
-						{#if submission.build}
-							{#if buildAsText}
-								{submission.build}
-							{:else}
-								<a href={formatLink(submission.build)} target="_blank" rel="noopener noreferrer"
-									>Build</a
-								>
-							{/if}
+						{#if buildAsText || !isLink(submission.build)}
+							<span title={submission.build}>{submission.build || '-'}</span>
 						{:else}
-							-
+							<a href={formatLink(submission.build)} target="_blank" rel="noopener noreferrer"
+								>Build</a
+							>
 						{/if}
 					</td>
 					<td>{formatDate(submission.created_at)}</td>
