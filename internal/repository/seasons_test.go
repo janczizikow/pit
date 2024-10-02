@@ -19,7 +19,6 @@ func TestListSeasons(t *testing.T) {
 }
 
 func TestCurrentSeason(t *testing.T) {
-
 	repo := repository.New(db)
 
 	t.Run("returns error when no seasons exist", func(t *testing.T) {
@@ -43,8 +42,6 @@ func TestCurrentSeason(t *testing.T) {
 }
 
 func TestStatistics(t *testing.T) {
-	t.Parallel()
-
 	repo := repository.New(db)
 	season, err := repo.Seasons.Create(&models.Season{Name: "Test", End: nil})
 	require.NoError(t, err)

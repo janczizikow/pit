@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/janczizikow/pit/internal/bot"
@@ -67,7 +69,10 @@ func main() {
 		defer discord.Close()
 		log.Info().Msg("discord bot is running")
 
-		<-make(chan struct{})
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		signal := <-quit
+		log.Info().Str("signal", signal.String()).Msg("shutting down discord bot")
 	}()
 	log.Info().Msg("starting server")
 

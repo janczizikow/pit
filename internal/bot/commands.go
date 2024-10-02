@@ -57,11 +57,11 @@ var commands = []*discordgo.ApplicationCommand{
 				Choices: []*discordgo.ApplicationCommandOptionChoice{
 					{
 						Name:  "Softcore",
-						Value: "softcore",
+						Value: models.Softcore,
 					},
 					{
 						Name:  "Hardcore",
-						Value: "hardcore",
+						Value: models.Hardcore,
 					},
 				},
 			},
@@ -77,6 +77,10 @@ var commands = []*discordgo.ApplicationCommand{
 					{
 						Name:  "Season 5",
 						Value: 5,
+					},
+					{
+						Name:  "Season 6",
+						Value: 6,
 					},
 				},
 			},

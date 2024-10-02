@@ -62,6 +62,10 @@ func TestCreateSeasonSubmissionHandler(t *testing.T) {
 		submissionsHandler := handlers.NewSeasonSubmissionsHandler(repo)
 		seasonId, err := createSeason(db)
 		require.NoError(t, err)
+		t.Cleanup(func() {
+			_, err = db.Exec(context.Background(), "DELETE FROM seasons WHERE id = $1", seasonId)
+			require.NoError(t, err)
+		})
 
 		req, err := http.NewRequest("POST", fmt.Sprintf("/api/v1/seasons/%v/submissions", seasonId), strings.NewReader(`{
 			"name": "Test",
@@ -82,8 +86,6 @@ func TestCreateSeasonSubmissionHandler(t *testing.T) {
 			err := json.Unmarshal(rr.Body.Bytes(), &submission)
 			require.NoError(t, err)
 			_, err = db.Exec(context.Background(), "DELETE FROM submissions WHERE id = $1", submission.ID)
-			require.NoError(t, err)
-			_, err = db.Exec(context.Background(), "DELETE FROM seasons WHERE id = $1", seasonId)
 			require.NoError(t, err)
 		})
 		mux.ServeHTTP(rr, req)

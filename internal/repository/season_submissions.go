@@ -51,12 +51,10 @@ func (r *seasonSubmissionsRepository) List(seasonId int, params ListSubmissionsP
 														FROM (
 															SELECT DISTINCT ON (name, class, mode) *
 															FROM submissions
-															WHERE season_id = $1
+															WHERE verified = true AND season_id = $1
 															ORDER BY name ASC, class ASC, mode ASC, %s
 														) sub
-												WHERE verified = true
-												AND season_id = $1
-												AND ($2 = '' OR class = $2::class)
+												WHERE ($2 = '' OR class = $2::class)
 												AND ($3 = '' OR mode = $3::mode)
 												ORDER BY %s
 												LIMIT $4 OFFSET $5;`, params.OrderBy, params.OrderBy)
@@ -75,12 +73,10 @@ func (r *seasonSubmissionsRepository) List(seasonId int, params ListSubmissionsP
 								FROM (
 									SELECT DISTINCT ON (name, class, mode) *
 									FROM submissions
-									WHERE season_id = $1
+									WHERE verified = true AND season_id = $1
 									ORDER BY name ASC, class ASC, mode ASC, tier DESC, duration ASC
 								) sub
-						WHERE verified = true
-						AND season_id = $1
-						AND ($2 = '' OR class = $2::class)
+						WHERE ($2 = '' OR class = $2::class)
 						AND ($3 = '' OR mode = $3::mode)
 						ORDER BY id DESC
 						LIMIT $4 OFFSET $5;`
