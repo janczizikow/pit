@@ -13,7 +13,7 @@ import (
 
 type SubmissionParsed struct {
 	Date     string `json:"Date"`
-	Tier     string `json:"Tier"`
+	Tier     int    `json:"Tier"`
 	Duration string `json:"Time Used"`
 	Name     string `json:"Player"`
 	Class    string `json:"Class"`
@@ -70,18 +70,14 @@ func main() {
 				log.Fatal("Error when parsing duration: ", err)
 			}
 		}
-		date := strings.Split(v.Date, "/")
-		if len(date[0]) == 1 {
-			date[0] = fmt.Sprintf("0%s", date[0])
-		}
-		created, err := time.Parse(time.DateOnly, fmt.Sprintf("%s-%s-%s", date[2], date[0], date[1]))
+		created, err := time.Parse(time.RFC3339, v.Date)
 		if err != nil {
 			log.Fatal("Error when parsing date: ", err)
 		}
 		data = append(data, []string{
 			v.Name,
 			strings.ToLower(v.Class),
-			v.Tier,
+			strconv.FormatInt(int64(v.Tier), 10),
 			mode,
 			v.Build,
 			v.Video,
