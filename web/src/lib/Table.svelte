@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Submission } from '$lib/types';
+	import canParseUrl from '$lib/canParseUrl';
 	export let data: Submission[];
 	export let skip: number;
 	export let buildAsText: boolean;
@@ -23,7 +24,7 @@
 		if (!link) {
 			return false;
 		}
-		return URL.canParse(link) || link.includes('/');
+		return canParseUrl(link) || link.includes('/');
 	}
 </script>
 
