@@ -36,6 +36,8 @@
 		"@felte/validator-zod": "^1.0.17",
 		"@sentry/sveltekit": "^8.32.0",
 		"@tanstack/svelte-query": "^5.56.2",
+		"@types/d3": "^7.4.3",
+		"d3": "^7.9.0",
 		"felte": "^1.2.14",
 		"zod": "^3.23.8"
 	}

@@ -7,6 +7,7 @@
 	import { createQuery } from '@tanstack/svelte-query';
 	import { writable } from 'svelte/store';
 	import { getInt } from '$lib/utils';
+	import PieChart from '$lib/PieChart.svelte';
 
 	const seasonId = writable(5);
 	$: query = createQuery<SeasonStatisticsResponse>({
@@ -65,6 +66,7 @@
 		</div>
 	</div>
 	<h2>Per class</h2>
+	<PieChart data={$query.data?.data || []} />
 	<div class="grid-classes">
 		{#if $query.isLoading}
 			<div>Loading...</div>
@@ -125,6 +127,7 @@
 	}
 
 	.grid-classes {
+		margin-top: 24px;
 		display: grid;
 		gap: 8px;
 	}
