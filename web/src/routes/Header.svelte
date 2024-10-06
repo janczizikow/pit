@@ -19,6 +19,11 @@
 				<div class="nav-link-text">Discord Bot</div>
 			</div>
 		</a>
+		<button class="link" data-feedbackfin-button>
+			<div class="nav-link-content">
+				<div class="nav-link-text">Feedback</div>
+			</div>
+		</button>
 	</nav>
 
 	{#if !$page.url.pathname.includes('/submission')}
@@ -107,5 +112,9 @@
 		padding: 0px;
 		position: relative;
 		text-decoration: none;
+	}
+
+	button {
+		cursor: pointer;
 	}
 </style>
