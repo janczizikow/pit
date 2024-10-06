@@ -13,7 +13,7 @@ import (
 func TestListSeasons(t *testing.T) {
 	repo := repository.New(db)
 
-	_, count, err := repo.Seasons.List()
+	_, count, err := repo.Seasons.List(100, 0)
 	require.NoError(t, err)
 	assert.Equal(t, 0, count)
 }

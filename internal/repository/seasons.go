@@ -10,7 +10,7 @@ import (
 // SeasonsRepository is the interface that a seasons repository should conform to.
 type SeasonsRepository interface {
 	// List returns a list of seasons.
-	List() ([]*models.Season, int, error)
+	List(limit, offset int) ([]*models.Season, int, error)
 	// Current returns the current season.
 	Current() (*models.Season, error)
 	// Create creates a new season.
@@ -28,14 +28,14 @@ func NewSeasonsRepository(db *pgxpool.Pool) SeasonsRepository {
 }
 
 // List returns a list of seasons.
-func (r *seasonsRepository) List() ([]*models.Season, int, error) {
+func (r *seasonsRepository) List(limit, offset int) ([]*models.Season, int, error) {
 	count := 0
 	seasons := make([]*models.Season, 0)
 	query := `SELECT COUNT(*) OVER(), id, seasons.name, pit, seasons.start, seasons.end, created_at, updated_at
 						FROM seasons
 						ORDER BY id DESC
-						LIMIT 100;`
-	rows, err := r.db.Query(context.Background(), query)
+						LIMIT $1 OFFSET $2;`
+	rows, err := r.db.Query(context.Background(), query, limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}

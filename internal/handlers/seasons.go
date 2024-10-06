@@ -24,8 +24,22 @@ func NewSeasonsHandler(repo repository.SeasonsRepository) SeasonsHandler {
 }
 
 func (h *seasonsHandler) ListSeasons(w http.ResponseWriter, r *http.Request) {
-	paginator := request.NewPaginator(100, 1, make([]string, 0), make(map[string]bool))
-	seasons, total, err := h.repo.List()
+	page, err := request.QueryInt(r, "page", 1)
+	if err != nil {
+		response.BadRequestResponse(w, r, err)
+		return
+	}
+	size, err := request.QueryInt(r, "size", 100)
+	if err != nil {
+		response.BadRequestResponse(w, r, err)
+		return
+	}
+	paginator := request.NewPaginator(size, page, make([]string, 0), make(map[string]bool))
+	if ok, errs := paginator.Valid(); !ok {
+		response.FailedValidationResponse(w, r, errs)
+		return
+	}
+	seasons, total, err := h.repo.List(paginator.Limit(), paginator.Offset())
 	if err != nil {
 		response.InternalServerErrorResponse(w, r)
 		return
