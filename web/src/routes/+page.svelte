@@ -8,23 +8,43 @@
 	import HardcoreButton from '$lib/HardcoreButton.svelte';
 	import Text from '$lib/Text.svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { listSubmissions, PAGE_SIZE } from '$lib/api';
 	import { writable } from 'svelte/store';
-	import type { SubmissionsResponse } from '$lib/types';
+	import {
+		ListSeasonSubmissions200ResponseFromJSON,
+		ListSeasonSubmissionsClassEnum,
+		ListSeasonSubmissionsModeEnum,
+		SubmissionApi,
+		type ListSeasonSubmissions200Response
+	} from '$lib/api';
 	import preloaded from '$lib/assets/preloaded.json';
 	import { getInt } from '$lib/utils';
 
-	const query = writable({
+	const PAGE_SIZE = 50;
+	const query = writable<{
+		page: number;
+		mode: ListSeasonSubmissionsModeEnum;
+		class: string;
+		season: number;
+	}>({
 		page: 1,
-		mode: 'softcore',
+		mode: ListSeasonSubmissionsModeEnum.Softcore,
 		class: '',
 		season: 5
 	});
 
-	let prevData: SubmissionsResponse = preloaded;
+	let prevData: ListSeasonSubmissions200Response =
+		ListSeasonSubmissions200ResponseFromJSON(preloaded);
 	$: queryResult = createQuery({
 		queryKey: ['submissions', { ...$query }],
-		queryFn: () => listSubmissions($query),
+		queryFn: () =>
+			new SubmissionApi().listSeasonSubmissions({
+				id: $query.season,
+				page: $query.page,
+				size: PAGE_SIZE,
+				mode: $query.mode,
+				_class: $query.class as ListSeasonSubmissionsClassEnum,
+				sort: '-tier,duration'
+			}),
 		staleTime: 60 * 1000 // 1min
 		// https://github.com/TanStack/query/issues/5913
 		// placeholderData: keepPreviousData,
@@ -90,13 +110,13 @@
 	afterNavigate(() => {
 		const p = $page.url.searchParams.get('page') || '1';
 		const classQuery = $page.url.searchParams.get('class') || '';
-		const mode = $page.url.searchParams.get('mode') || 'softcore';
+		const mode = $page.url.searchParams.get('mode') || ListSeasonSubmissionsModeEnum.Softcore;
 		const s = $page.url.searchParams.get('season') || '5';
 
 		query.set({
 			page: getInt(p, 1),
 			class: classQuery,
-			mode,
+			mode: mode as ListSeasonSubmissionsModeEnum,
 			season: getInt(s, 5)
 		});
 	});
@@ -144,34 +164,34 @@
 				<HardcoreButton selected={$query.mode === 'hardcore'} {onToggleHC} />
 				<div class="flex wrap classes">
 					<ClassButton
-						type="barbarian"
-						selected={$query.class === 'barbarian'}
+						type={ListSeasonSubmissionsClassEnum.Barbarian}
+						selected={$query.class === ListSeasonSubmissionsClassEnum.Barbarian}
 						onSelectClass={onChangeClass}
 					/>
 					<ClassButton
-						type="druid"
-						selected={$query.class === 'druid'}
+						type={ListSeasonSubmissionsClassEnum.Druid}
+						selected={$query.class === ListSeasonSubmissionsClassEnum.Druid}
 						onSelectClass={onChangeClass}
 					/>
 					<ClassButton
-						type="necromancer"
-						selected={$query.class === 'necromancer'}
+						type={ListSeasonSubmissionsClassEnum.Necromancer}
+						selected={$query.class === ListSeasonSubmissionsClassEnum.Necromancer}
 						onSelectClass={onChangeClass}
 					/>
 					<ClassButton
-						type="rogue"
-						selected={$query.class === 'rogue'}
+						type={ListSeasonSubmissionsClassEnum.Rogue}
+						selected={$query.class === ListSeasonSubmissionsClassEnum.Rogue}
 						onSelectClass={onChangeClass}
 					/>
 					<ClassButton
-						type="sorcerer"
-						selected={$query.class === 'sorcerer'}
+						type={ListSeasonSubmissionsClassEnum.Sorcerer}
+						selected={$query.class === ListSeasonSubmissionsClassEnum.Sorcerer}
 						onSelectClass={onChangeClass}
 					/>
 					<ClassButton
 						disabled={$query.season < 6}
-						type="spiritborn"
-						selected={$query.class === 'spiritborn'}
+						type={ListSeasonSubmissionsClassEnum.Spiritborn}
+						selected={$query.class === ListSeasonSubmissionsClassEnum.Spiritborn}
 						onSelectClass={onChangeClass}
 					/>
 				</div>

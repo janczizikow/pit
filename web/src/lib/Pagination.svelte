@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DiabloButton from '$lib/DiabloButton.svelte';
-	import type { PaginationMetadata } from '$lib/types';
+	import type { PaginationMetadata } from '$lib/api';
 
 	export let metadata: PaginationMetadata;
 	export let onChangePage: (page: number) => void;
@@ -9,22 +9,22 @@
 <div class="pagination">
 	<DiabloButton
 		type="primary"
-		disabled={metadata?.current_page === 1 || !metadata.current_page}
+		disabled={metadata?.currentPage === 1 || !metadata.currentPage}
 		onClick={() => {
-			if (metadata?.current_page) {
-				onChangePage(metadata.current_page - 1);
+			if (metadata?.currentPage) {
+				onChangePage(metadata.currentPage - 1);
 			}
 		}}
 	>
 		<b>&lt;</b>
 	</DiabloButton>
-	<DiabloButton type="primary">{metadata?.current_page || 1}</DiabloButton>
+	<DiabloButton type="primary">{metadata?.currentPage || 1}</DiabloButton>
 	<DiabloButton
 		type="primary"
-		disabled={metadata?.last_page === metadata?.current_page}
+		disabled={metadata?.lastPage === metadata?.currentPage}
 		onClick={() => {
-			if (metadata?.current_page) {
-				onChangePage(metadata.current_page + 1);
+			if (metadata?.currentPage) {
+				onChangePage(metadata.currentPage + 1);
 			}
 		}}><b>&gt;</b></DiabloButton
 	>

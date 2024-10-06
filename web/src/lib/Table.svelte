@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Submission } from '$lib/types';
+	import type { Submission } from '$lib/api';
 	import canParseUrl from '$lib/canParseUrl';
 	export let data: Submission[];
 	export let skip: number;
@@ -10,9 +10,6 @@
 		const remainingSeconds = Math.floor(seconds % 60);
 		const formattedSeconds = remainingSeconds.toString().padStart(2, '0');
 		return `${minutes}:${formattedSeconds}`;
-	}
-	function formatDate(date: string) {
-		return new Date(date).toLocaleDateString();
 	}
 	function formatLink(link: string) {
 		if (link.startsWith('http')) {
@@ -63,7 +60,7 @@
 				<tr>
 					<td class="rank">{i + 1 + skip}</td>
 					<td class="player" title={submission.name}>{submission.name}</td>
-					<td class="class">{submission.class}</td>
+					<td class="class">{submission._class}</td>
 					<td class="tier">{submission.tier}</td>
 					<td class="time">{formatSeconds(submission.duration)}</td>
 					<td class="link-column">
@@ -80,7 +77,7 @@
 							>
 						{/if}
 					</td>
-					<td>{formatDate(submission.created_at)}</td>
+					<td>{submission.createdAt.toLocaleDateString()}</td>
 				</tr>
 			{/each}
 		</tbody>

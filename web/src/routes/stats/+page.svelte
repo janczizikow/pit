@@ -1,25 +1,16 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { afterNavigate, goto } from '$app/navigation';
 	import Heading from '$lib/Heading.svelte';
 	import Text from '$lib/Text.svelte';
-	import type { SeasonStatisticsResponse } from '$lib/types';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { writable } from 'svelte/store';
 	import { getInt } from '$lib/utils';
 	import PieChart from '$lib/PieChart.svelte';
+	import { type GetSeasonStatistics200Response, StatisticsApi } from '$lib/api';
 
 	const seasonId = writable(5);
-	$: query = createQuery<SeasonStatisticsResponse>({
+	$: query = createQuery<GetSeasonStatistics200Response>({
 		queryKey: ['seasonStatistics', { id: $seasonId }],
-		queryFn: async () => {
-			const res = await fetch(`/api/v1/seasons/${$seasonId}/statistics`);
-			const json = await res.json();
-			if (res.status >= 300) {
-				throw json;
-			}
-			return json;
-		}
+		queryFn: () => new StatisticsApi().getSeasonStatistics({ id: $seasonId })
 	});
 	const onChangeSeason = (season: string) => {
 		seasonId.set(getInt(season, 5));
@@ -50,19 +41,19 @@
 	<div class="grid">
 		<div class="card">
 			<h4 class="card-meta">Total Submission</h4>
-			<span class="card-title">{$query.data?.totals.total_submissions || 0}</span>
+			<span class="card-title">{$query.data?.totals.totalSubmissions || 0}</span>
 		</div>
 		<div class="card">
 			<h4 class="card-meta">Unique Players</h4>
-			<span class="card-title">{$query.data?.totals.unique_player_count || 0}</span>
+			<span class="card-title">{$query.data?.totals.uniquePlayerCount || 0}</span>
 		</div>
 		<div class="card">
 			<h4 class="card-meta">Max tier</h4>
-			<span class="card-title">{$query.data?.totals.max_tier || 0}</span>
+			<span class="card-title">{$query.data?.totals.maxTier || 0}</span>
 		</div>
 		<div class="card">
 			<h4 class="card-meta">Average tier</h4>
-			<span class="card-title">{$query.data?.totals.average_tier || 0}</span>
+			<span class="card-title">{$query.data?.totals.averageTier || 0}</span>
 		</div>
 	</div>
 	<h2>Per class</h2>
@@ -75,18 +66,18 @@
 		{:else if $query.isSuccess}
 			{#each $query.data?.data as dataPoint}
 				<div class="card">
-					<h4 class="card-meta">{dataPoint.class?.toUpperCase()}</h4>
+					<h4 class="card-meta">{dataPoint._class?.toUpperCase()}</h4>
 					<div class="wrap">
-						<span class="class-meta">Total Submissions: {dataPoint.total_submissions}</span>
-						<span class="class-meta">Unique Players: {dataPoint.unique_player_count}</span>
+						<span class="class-meta">Total Submissions: {dataPoint.totalSubmissions}</span>
+						<span class="class-meta">Unique Players: {dataPoint.uniquePlayerCount}</span>
 					</div>
 					<div class="wrap">
-						<span class="class-meta">Max Tier: {dataPoint.max_tier}</span>
-						<span class="class-meta">Avg Tier: {dataPoint.average_tier}</span>
+						<span class="class-meta">Max Tier: {dataPoint.maxTier}</span>
+						<span class="class-meta">Avg Tier: {dataPoint.averageTier}</span>
 					</div>
 					<div class="wrap">
-						<span class="class-meta">% of total: {dataPoint.percentage_total}</span>
-						<span class="class-meta">% of unique: {dataPoint.percentage_unique}</span>
+						<span class="class-meta">% of total: {dataPoint.percentageTotal}</span>
+						<span class="class-meta">% of unique: {dataPoint.percentageUnique}</span>
 					</div>
 				</div>
 			{/each}

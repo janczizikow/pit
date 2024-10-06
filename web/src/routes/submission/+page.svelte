@@ -2,25 +2,24 @@
 	import Heading from '$lib/Heading.svelte';
 	import Text from '$lib/Text.svelte';
 	import SubmissionForm from '$lib/SubmissionForm.svelte';
-	import type { APIError, NewSubmission, Season } from '$lib/types';
 	import { writable } from 'svelte/store';
 	import ErrorMessage from '$lib/ErrorMessage.svelte';
 	import Modal from '$lib/Modal.svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	let seasonId = 5;
+	import {
+		type Season,
+		type NewSubmission,
+		type APIError,
+		SeasonApi,
+		SubmissionApi
+	} from '$lib/api';
+	let seasonId = 6;
 	let showModal = false;
 	let error = writable<APIError | null>(null);
 
 	const query = createQuery<Season>({
 		queryKey: ['currentSeason'],
-		queryFn: async () => {
-			const res = await fetch('/api/v1/seasons/current');
-			const json = await res.json();
-			if (res.status >= 300) {
-				throw json;
-			}
-			return json;
-		}
+		queryFn: () => new SeasonApi().getCurrentSeason()
 	});
 	$: if ($query?.isSuccess) {
 		seasonId = $query.data.id;
@@ -29,14 +28,10 @@
 	const handleSubmit = async (data: NewSubmission) => {
 		try {
 			error.set(null);
-			const res = await fetch(`/api/v1/seasons/${seasonId}/submissions`, {
-				method: 'POST',
-				body: JSON.stringify(data)
+			await new SubmissionApi().createSubmission({
+				id: seasonId,
+				newSubmission: data
 			});
-			const json = await res.json();
-			if (res.status >= 300) {
-				throw json;
-			}
 			showModal = true;
 			return true;
 		} catch (err) {

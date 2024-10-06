@@ -22,3 +22,6 @@ vite.config.ts.timestamp-*
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# generated api files
+/src/lib/api

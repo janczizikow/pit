@@ -4,15 +4,18 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
+		"prebuild": "openapi-generator-cli generate",
 		"build": "vite build",
 		"postbuild": "./scripts/postbuild.sh",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"codegen": "openapi-generator-cli generate",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
+		"@openapitools/openapi-generator-cli": "^2.13.13",
 		"@sveltejs/adapter-static": "^3.0.4",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",

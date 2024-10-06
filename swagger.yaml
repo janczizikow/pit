@@ -1,0 +1,398 @@
+openapi: 3.1.0
+info:
+  title: Diablo 4 Pit API
+  description: |-
+    Use the Diablo 4 Pit API to integrate with your application.
+  termsOfService: https://diablo4pit.web.app/terms/
+  contact:
+    email: jan.czizikow@gmail.com
+  license:
+    name: MIT
+    url: https://mit-license.org/
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: /api/v1
+tags:
+  - name: season
+    description: Diablo 4 seasons
+  - name: submission
+    description: Pit run submission
+  - name: statistics
+    description: aggregate and per class statistics for a given season
+paths:
+  /seasons:
+    get:
+      tags:
+        - season
+      summary: Returns list of seasons
+      description: Returns a list seasons
+      operationId: listSeasons
+      parameters:
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/pageSizeParam"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - metadata
+                properties:
+                  metadata:
+                    $ref: "#/components/schemas/PaginationMetadata"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Season"
+  /seasons/current:
+    get:
+      tags:
+        - season
+      summary: Returns the current season
+      description: Returns the current season
+      operationId: getCurrentSeason
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Season"
+        "404":
+          description: Season not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+  /seasons/{id}/submissions:
+    get:
+      tags:
+        - submission
+      summary: Returns list of submissions for a season
+      description: Returns list of submissions for a season
+      operationId: listSeasonSubmissions
+      parameters:
+        - name: id
+          in: path
+          description: ID of season to return submissions for
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/pageSizeParam"
+        - $ref: "#/components/parameters/modeParam"
+        - $ref: "#/components/parameters/classParam"
+        - $ref: "#/components/parameters/sortSubmissionsParam"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - metadata
+                properties:
+                  metadata:
+                    $ref: "#/components/schemas/PaginationMetadata"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Submission"
+    post:
+      tags:
+        - submission
+      summary: Add a new submission to a season
+      description: Add a new submission to a season
+      operationId: createSubmission
+      parameters:
+        - name: id
+          in: path
+          description: ID of season to add submission to
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: "#/components/requestBodies/NewSubmission"
+        description: Create a new submission in the season
+      responses:
+        "201":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Submission"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+        "422":
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+  /seasons/{id}/statistics:
+    get:
+      tags:
+        - statistics
+      summary: aggregate and per class statistics for a given season.
+      description: Returns aggregate and per class statistics for a given season.
+      operationId: getSeasonStatistics
+      parameters:
+        - name: id
+          in: path
+          description: ID of season to return statistics for
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - totals
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SeasonStatistic"
+                  totals:
+                    $ref: "#/components/schemas/SeasonStatistic"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+components:
+  schemas:
+    APIError:
+      type: object
+      required:
+        - status
+        - error
+      properties:
+        status:
+          type: integer
+          format: int64
+          description: The HTTP status code.
+        error:
+          type: string
+          description: Description of the problem.
+      examples: [{ status: 400, error: "Bad Request" }]
+    PaginationMetadata:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          format: int64
+          examples: [1]
+        page_size:
+          type: integer
+          format: int64
+          max: 1000
+          examples: [50]
+        first_page:
+          type: integer
+          format: int64
+          examples: [1]
+        last_page:
+          type: integer
+          format: int64
+          examples: [6]
+        total_records:
+          type: integer
+          format: int64
+          examples: [300]
+    Season:
+      type: object
+      required:
+        - id
+        - name
+        - pit
+        - start
+        - end
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          examples: [6]
+        name:
+          type: string
+        pit:
+          type: boolean
+          description: whether the season had pit in it or not
+        start:
+          type: string
+          format: date-time
+        end:
+          type: [string, "null"]
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    NewSubmission:
+      type: object
+      required:
+        - name
+        - class
+        - tier
+        - mode
+        - build
+        - video
+        - duration
+      properties:
+        name:
+          type: string
+          description: Name of the player
+        class:
+          type: string
+          enum:
+            [
+              "barbarian",
+              "druid",
+              "necromancer",
+              "rogue",
+              "sorcerer",
+              "spiritborn",
+            ]
+        tier:
+          type: integer
+          format: int64
+          min: 1
+          max: 200
+        mode:
+          type: string
+          enum: ["softcore", "hardcore"]
+        build:
+          type: string
+        video:
+          type: string
+          format: url
+          examples: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"]
+        duration:
+          type: integer
+          format: int64
+          max: 900
+          description: Duration of the run in seconds
+          examples: [750]
+    Submission:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/NewSubmission"
+      required:
+        - id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          examples: [10]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    SeasonStatistic:
+      type: object
+      properties:
+        class:
+          type: string
+        total_submissions:
+          type: integer
+          format: int64
+        unique_player_count:
+          type: integer
+          format: int64
+        max_tier:
+          type: integer
+          format: int64
+          max: 200
+        average_tier:
+          type: integer
+          format: int64
+          max: 200
+        percentage_total:
+          type: number
+          format: double
+        percentage_unique:
+          type: number
+          format: double
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+        min: 1
+    pageSizeParam:
+      name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+        default: 50
+        max: 1000
+    modeParam:
+      name: mode
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: ["softcore", "hardcore"]
+    classParam:
+      name: class
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          [
+            "barbarian",
+            "druid",
+            "necromancer",
+            "rogue",
+            "sorcerer",
+            "spiritborn",
+          ]
+    sortSubmissionsParam:
+      name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+  requestBodies:
+    NewSubmission:
+      required: true
+      description: Submission object that needs to be added to the season
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NewSubmission"

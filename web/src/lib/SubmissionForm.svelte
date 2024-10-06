@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { NewSubmission } from '$lib/types';
+	import type { NewSubmission } from '$lib/api';
 	import Label from '$lib/Label.svelte';
 	import HelperText from '$lib/HelperText.svelte';
 	import { validator } from '@felte/validator-zod';
@@ -13,7 +13,7 @@
 	const CLASSES = ['barbarian', 'druid', 'necromancer', 'rogue', 'sorcerer'] as const;
 	const schema = zod.object({
 		name: zod.string().min(1),
-		class: zod.enum(CLASSES),
+		_class: zod.enum(CLASSES),
 		mode: zod.enum(MODES),
 		tier: zod.coerce.number().gt(0).lte(200),
 		duration: zod
@@ -40,19 +40,19 @@
 		return parseInt(m) * 60 + parseInt(s);
 	}
 	function parseData(raw: zod.infer<typeof schema>): NewSubmission {
-		return { ...raw, duration: toSeconds(raw.duration) };
+		return { ...raw, build: raw.build || '', duration: toSeconds(raw.duration) };
 	}
 </script>
 
 <form class="container" use:form>
 	<div class="field">
 		<Label for="name">Name*</Label>
-		<input name="name" required class={$errors.name ? 'input-error' : ''} />
+		<input id="name" name="name" required class={$errors.name ? 'input-error' : ''} />
 		<HelperText>{$errors.name?.[0] || ''}</HelperText>
 	</div>
 	<div class="field">
-		<Label for="class">Class*</Label>
-		<select name="class" required class={$errors.class ? 'input-error' : ''}>
+		<Label for="_class">Class*</Label>
+		<select id="_class" name="_class" required class={$errors._class ? 'input-error' : ''}>
 			<option value="barbarian">Barbarian</option>
 			<option value="druid">Druid</option>
 			<option value="necromancer">Necromancer</option>
@@ -60,11 +60,11 @@
 			<option value="sorcerer">Sorcerer</option>
 			<option value="spiritborn" disabled={seasonId < 6}>Spiritborn</option>
 		</select>
-		<HelperText>{$errors.class?.[0] || ''}</HelperText>
+		<HelperText>{$errors._class?.[0] || ''}</HelperText>
 	</div>
 	<div class="field">
 		<Label for="mode">Mode*</Label>
-		<select name="mode" required class={$errors.mode ? 'input-error' : ''}>
+		<select id="mode" name="mode" required class={$errors.mode ? 'input-error' : ''}>
 			<option value="softcore">Softcore</option>
 			<option value="hardcore">Hardcore</option>
 		</select>
@@ -73,6 +73,7 @@
 	<div class="field">
 		<Label for="tier">Tier*</Label>
 		<input
+			id="tier"
 			name="tier"
 			type="number"
 			min="1"
@@ -86,6 +87,7 @@
 	<div class="field">
 		<Label for="duration">Time*</Label>
 		<input
+			id="duration"
 			name="duration"
 			required
 			placeholder="12:43"
@@ -96,6 +98,7 @@
 	<div class="field">
 		<Label for="video">Video*</Label>
 		<input
+			id="video"
 			name="video"
 			required
 			class={$errors.video ? 'input-error' : ''}
@@ -105,7 +108,7 @@
 	</div>
 	<div class="field">
 		<Label for="build">Build</Label>
-		<input name="build" class={$errors.build ? 'input-error' : ''} />
+		<input id="build" name="build" class={$errors.build ? 'input-error' : ''} />
 		<HelperText>{$errors.build?.[0] || ''}</HelperText>
 	</div>
 	<button type="submit" class="button" disabled={isBusy || $isSubmitting || !$isValid}

@@ -2,18 +2,18 @@
 	import { arc, pie } from 'd3-shape';
 	import { scaleOrdinal } from 'd3-scale';
 	import { ascending, sort } from 'd3-array';
-	import type { SeasonStatistics } from '$lib/types';
+	import type { SeasonStatistic } from '$lib/api';
 
 	let el;
-	let chartData: SeasonStatistics[];
+	let chartData: SeasonStatistic[];
 
 	export let width = 300;
 	let height = 340;
-	export let data: SeasonStatistics[] = [];
+	export let data: SeasonStatistic[] = [];
 
 	// sort the data so we will place the biggest slices first starting from 12 o'clock position.
 	$: if (data) {
-		chartData = sort(data, (a, b) => ascending(a.class, b.class));
+		chartData = sort(data, (a, b) => ascending(a._class, b._class));
 	}
 
 	const colorScale = scaleOrdinal()
@@ -22,8 +22,8 @@
 		)
 		.range(['#C69B6D', '#FF7C0A', '#8788EE', '#FFF468', '#3FC7EB', '#00FF98']);
 
-	const pieGenerator = pie<SeasonStatistics>()
-		.value((d) => d.percentage_total || 0)
+	const pieGenerator = pie<SeasonStatistic>()
+		.value((d) => d.percentageTotal || 0)
 		.sort(null);
 
 	$: pieData = pieGenerator(chartData);
@@ -47,7 +47,7 @@
 		{#if width}
 			<svg viewBox={`0 0 ${width} ${height + 40}`} class="chart">
 				<g bind:this={el} transform="translate({width / 2 - 5} {height / 2 + 20})">
-					{#each pieData as d, i (d.data.class)}
+					{#each pieData as d, i (d.data._class)}
 						<path
 							class={`${i}`}
 							pointer-events="all"
@@ -56,7 +56,7 @@
 							{...{
 								/* @ts-ignore */
 							}}
-							fill={colorScale(d.data.class)}
+							fill={colorScale(d.data._class)}
 						/>
 						<!-- labels -->
 						<text
@@ -66,7 +66,7 @@
 							font-size="0.8em"
 							class="text"
 							transform="translate({labelArcs.centroid(d).join(' ')})"
-							>{d.data.class}
+							>{d.data._class}
 						</text>
 						<text
 							x="0"
@@ -76,7 +76,7 @@
 							font-weight="700"
 							class="text"
 							transform="translate({labelArcs.centroid(d).join(' ')})"
-							>{d.data.percentage_total + ' %'}
+							>{d.data.percentageTotal + ' %'}
 						</text>
 					{/each}
 				</g>
