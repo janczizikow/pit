@@ -29,7 +29,7 @@
 		page: 1,
 		mode: ListSeasonSubmissionsModeEnum.Softcore,
 		class: '',
-		season: 5
+		season: 6
 	});
 
 	let prevData: ListSeasonSubmissions200Response =
@@ -111,13 +111,13 @@
 		const p = $page.url.searchParams.get('page') || '1';
 		const classQuery = $page.url.searchParams.get('class') || '';
 		const mode = $page.url.searchParams.get('mode') || ListSeasonSubmissionsModeEnum.Softcore;
-		const s = $page.url.searchParams.get('season') || '5';
+		const s = $page.url.searchParams.get('season') || '6';
 
 		query.set({
 			page: getInt(p, 1),
 			class: classQuery,
 			mode: mode as ListSeasonSubmissionsModeEnum,
-			season: getInt(s, 5)
+			season: getInt(s, 6)
 		});
 	});
 </script>
@@ -158,7 +158,7 @@
 			>
 				<option value="4" selected={$query.season === 4}>Season 4</option>
 				<option value="5" selected={$query.season === 5}>Season 5</option>
-				<option value="6" disabled>Season 6</option>
+				<option value="6" selected={$query.season === 6}>Season 6</option>
 			</select>
 			<div class="flex">
 				<HardcoreButton selected={$query.mode === 'hardcore'} {onToggleHC} />

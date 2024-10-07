@@ -7,13 +7,13 @@
 	import PieChart from '$lib/PieChart.svelte';
 	import { type GetSeasonStatistics200Response, StatisticsApi } from '$lib/api';
 
-	const seasonId = writable(5);
+	const seasonId = writable(6);
 	$: query = createQuery<GetSeasonStatistics200Response>({
 		queryKey: ['seasonStatistics', { id: $seasonId }],
 		queryFn: () => new StatisticsApi().getSeasonStatistics({ id: $seasonId })
 	});
 	const onChangeSeason = (season: string) => {
-		seasonId.set(getInt(season, 5));
+		seasonId.set(getInt(season, 6));
 	};
 </script>
 
@@ -34,7 +34,7 @@
 	>
 		<option value="4" selected={$seasonId === 4}>Season 4</option>
 		<option value="5" selected={$seasonId === 5}>Season 5</option>
-		<option value="6" selected={$seasonId === 6} disabled>Season 6</option>
+		<option value="6" selected={$seasonId === 6}>Season 6</option>
 	</select>
 
 	<h2>Totals</h2>
