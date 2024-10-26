@@ -1,0 +1,39 @@
+name: Test Go
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: pit_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.22.4
+      - name: Install dependencies
+        run: go mod tidy
+      - name: Install golang-migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate $GOPATH/bin/migrate
+      - name: Run migrations
+        run: migrate -path ./migrations -database=$DB_DSN up
+        env:
+          DB_DSN: postgres://postgres:postgres@localhost/pit_test?sslmode=disable
+      - name: Run tests
+        run: go test -race -cover ./...

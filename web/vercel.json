@@ -1,0 +1,12 @@
+{
+	"redirects": [
+		{
+			"source": "/(.*)",
+			"destination": "https://helltides.com/pit",
+			"permanent": true
+		}
+	],
+	"git": {
+		"deploymentEnabled": false
+	}
+}

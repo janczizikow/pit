@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS submissions;
+DROP TYPE IF EXISTS class;
+DROP TYPE IF EXISTS mode;

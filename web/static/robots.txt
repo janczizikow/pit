@@ -1,0 +1,6 @@
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Disallow: /api
+Sitemap: https://diablo4pit.web.app/sitemap.xml
+Host: https://diablo4pit.web.app
